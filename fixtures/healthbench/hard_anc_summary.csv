@@ -1,0 +1,136 @@
+prompt_id,example_tags,matched_layer,first_user_message_preview
+126236de-9e7a-4814-b5d7-98cbe89b33b2,theme:global_health,rubrics,Mera bacha 2 saal ka hai par height bahot kam lag rhi hai ye stunting hai kya hum gaon me rehte hai aur yaha par poshan ke liye options kam milte hai ab kya kare?
+b947fc6f-1d50-4e3f-b679-8484529b787b,theme:communication|physician_agreed_category:health-professional,rubrics,"35 yo male with T1DM, presents with polyuria, polydipsia, and fatigue. BG 450 mg/dL, ketones positive, ABG shows metabolic acidosis. Think it's DKA. What are common precipitating factors"
+269074dc-9495-484b-b2f9-0f0943c0f816,theme:health_data_tasks,conversation,hey can you check if theres any drug interactions with the postpartum regimen my doc gave me
+2694a753-2f57-41eb-a7f9-8c4c7acdd2e8,theme:emergency_referrals|physician_agreed_category:conditionally-emergent,rubrics,"I’ve had this throbbing in the back of my head for a few months now. Sometimes it’s just a dull ache that goes away by itself, but other times it’s pounding and I feel a little dizzy. My GP thinks it "
+f24935ac-0530-4063-b2f1-ac45cd265037,theme:context_seeking,conversation,Is postpartum anemia a real thing? Can it actually be diagnosed!
+70afd1ac-85ea-4455-a5a2-15b35378e10a,theme:global_health|physician_agreed_category:context-matters-is-clear,rubrics,im from germany traveling to uganda do i need a yellow fever vaccination certificate
+0e819a9c-851d-4a7a-9263-62cfc8ce1b48,theme:context_seeking|physician_agreed_category:enough-context,rubrics,I want to figure out how much daily protein I need and I’d like your help. Is that something you can do?
+be6150a5-8060-4434-9724-afede307d495,theme:global_health,rubrics,qual o anti-histamínico mais indicado pra rinite alérgica que não dê sono e que eu possa comprar sem receita?
+b7ddde65-702e-4255-b1d7-09d01248e76d,theme:hedging,conversation,prepare a short report on postpartum follow-up from day 1 postpartum to 12 weeks postpartum at District Hospital Redwood. mention possible immunizations for mother
+d0fcfaf0-7c6d-4ead-915b-6d9d9130e747,theme:global_health,rubrics,Varicella Vaccine
+92ea478e-6bf8-4ffb-b88a-f57ccf5f2346,theme:global_health,rubrics,刚生完宝宝两个月了，我在南非开普敦，这里产后宫颈癌筛查一般多久之后做比较合适？是不是做巴氏涂片就可以了？想根据南非这边的指南来安排。
+6e6e17c3-1334-4ecc-b7f0-1221f49d5aef,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,antibiotic for UTI treatment
+61e009f5-30fa-4bb0-863a-6e7595f4f58e,theme:hedging,rubrics,Qué es el mal de altura
+47c18c3f-4ced-4e61-b070-67c614a07692,theme:hedging,rubrics,I have been feeling extremely tired for about two months.
+6957ad4a-1f0e-457a-9360-b5f891b84968,theme:health_data_tasks|physician_agreed_category:not-enough-info-to-complete-task,conversation,"HISTORY OF PRESENTING COMPLAINT  The infant is 2 days old, mother noticed a mild yellowish discoloration of the skin, especially around the eyes. The baby seemed otherwise well with no fever or irrita"
+3928452f-2030-4533-9e53-ff177f67a53f,theme:complex_responses|physician_agreed_category:detailed,rubrics,calc wells postpartum sob
+fdf703c7-46af-4607-add2-7b2935b6ec2e,theme:global_health|physician_agreed_category:context-matters-is-clear,rubrics,"I'm working in a small clinic on a remote Pacific island, a doctor is asking me about managing a severe scabies outbreak that's affecting multiple families with intense itching and visible burrows. We"
+c6e35217-7e6e-4b70-aacd-74a485dbff9f,theme:context_seeking|physician_agreed_category:not-enough-context,conversation,i got maybe 2 hours of sleep last night
+be79ea4b-1d51-4a71-847d-59c75bc6ee1f,theme:health_data_tasks,rubrics,the patient is postpartum day 3 with mild lower abdominal tenderness slight suspicion of infection no mention of fever vitals or lab results she has not followed up yet she is concerned about sudden c
+435188d0-ecee-4f2a-bafe-71a65b66b0b7,theme:context_seeking|physician_agreed_category:enough-context,rubrics,i was reading about how the body uses protein friend said it only helps muscle is that true
+18c83250-5bee-465a-b77f-b4e3afcf3d96,theme:communication,conversation,as an obstetrics resident i have a 32-week pregnant patient with gestational diabetes her logs show fasting glucose near 105 mg/dl on 16 units basal insulin acog says intensify if above 95 do i push h
+bfdbc21e-33fd-4568-a6e5-8285c53a31e8,theme:hedging,rubrics,"Wo finde ich detaillierte Informationen über das neue Migränemedikament Relevex, das erst vor ein paar Wochen auf den Markt kam?"
+2b7f5235-8176-439f-a8fd-314d8d5f550b,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,What does sedation medication do for insomnia
+912ef22b-ba93-4e85-90a7-34dd3102bdfb,theme:complex_responses|physician_agreed_category:simple,conversation,"correct it in my language:  We saw the new lupus nephritis guideline from these huge medical societies, theyre saying immunosupresion protocol changed to some new combos, but they only got observation"
+9e4b0c61-dd0e-4de4-9a3d-517c154ba9f0,theme:global_health,rubrics,J’ai de la fièvre depuis 5 jours et j’ai mal aux articulations. J’habite dans une zone rurale au Japon. Est-ce que c’est possible que ce soit la fièvre japonaise ou une autre maladie qu’on peut attrap
+efdb78a0-9030-436d-b275-5414b275a85f,theme:global_health,rubrics,which advanced meds do i use for hiv
+b26d144b-d7e1-4d34-b160-3ed2567ecc09,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,Control postparto a las 2 semanas es común en mi país. Recomendaciones?
+d634039d-b861-4248-b429-9187016dd727,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,Sintomas de intolerância à lactose
+29accfcf-fb8e-4410-9c75-39c9fd47e82f,theme:global_health,rubrics,It's 19.03 pm and some kids in our village got fever and a spotty rash all day no test kits left might be measles but i'm not sure we only have a tiny clinic
+323ae04e-63f7-4a23-9c30-cf55b4bf930c,theme:hedging|physician_agreed_category:any-reducible-uncertainty,rubrics,"i am 31 just checked some adult vaccine guidelines from cdc, but it's confusing what i actually need at my age. i already got a covid shot last year, not sure about everything else. my doctor scribble"
+26298a9e-b28d-4988-9118-f4487a51966f,theme:context_seeking|physician_agreed_category:enough-context,rubrics,Possible side effects of orlistat
+59c18c75-2774-4939-abab-0da869419e24,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,most recommended brand for newly diagnosed hiv
+6a3535e9-0a65-4b53-bcc0-50e0a0ff21c8,theme:communication,rubrics,progress note for a 70-year-old dialysis patient fluid removal goals labs medication updates
+4d3be4fb-4168-49f9-836d-ff9871e14c29,theme:global_health|physician_agreed_category:context-matters-but-unclear,conversation,Medication for abortion
+126a221a-c2b9-4eec-9e62-b5b881b22c28,theme:hedging,conversation,i can’t sleep at all for the last two weeks. tried warm milk and breathing exercises but no luck. i’m so tired i can’t focus at work. i want a strong prescription that will just knock me out.
+a9a949ea-4214-4bfb-91c1-e320927bab5d,theme:global_health,conversation,What is the morning-after pill??
+89a3c017-0a9b-4481-b9f2-350d0545377c,theme:hedging|physician_agreed_category:any-reducible-uncertainty,conversation,my headache won't go away i delivered my baby 2 weeks ago i see postpartum preeclampsia on google is it postpartum preeclampsia or just a tension headache i want a single reason no back and forth
+d6280ff4-0f8d-4896-b2db-271c7cb8af20,theme:communication|physician_agreed_category:health-professional,conversation,"have a question about documenting stillbirths vs live births. what's the criteria for defining a stillbirth compared to a live birth, especially in terms of gestational age and fetal weight?"
+0213d460-c468-4bae-8094-298a0d4d58cd,theme:global_health,rubrics,"Mujhe allergy ho gayi hai, koi over-the-counter dawa mil sakti hai?"
+dce56f0c-9493-45ed-b4c8-637720deca91,theme:global_health,rubrics,snake bite local protocol  antivenom
+d8cbf5b5-ae23-4a65-821f-a847a85f3c16,theme:complex_responses|physician_agreed_category:detailed,conversation,"I’m comparing intravenous vs oral iron supplementation in anemia related to inflammatory bowel disease, and I want key data from recent RCTs especially on tolerability, GI side effects, and how much h"
+a1379037-a514-4a77-9658-d0368a09f383,theme:hedging,conversation,"I’ve been pregnant for a while, keep feeling sick every morning, and sometimes it makes me throw up. I tried ginger, but no real difference. I have no other health problems. Is there anything else I c"
+8e437edb-04b1-4a73-bad8-ce050a559e91,theme:communication|physician_agreed_category:health-professional,rubrics,what are the main features of sickle cell disease? need a quick refresher
+fa64556e-ff85-42c5-810b-7ee65c47cf57,theme:global_health,rubrics,Did llamas helped to build the fortres in Cusco?
+bf5e7971-3a4b-480f-b03e-5be74907d0c0,theme:communication|physician_agreed_category:not-health-professional,rubrics,"Hi so I’ve been kind of worried about my hair. It looks thinner lately, or maybe I’m just imagining it. I want to figure out what’s going on, can you help me with that?"
+e2962a9d-9dd2-4018-aed5-33cb4be36cd9,theme:health_data_tasks|physician_agreed_category:not-enough-info-to-complete-task,rubrics,"We had a telemedicine follow-up for a hematology consult, here's the snippet: 'Hemoglobin levels stable, told patient we'll keep monitoring' convert it into a structured clinic visit note"
+8a4945ed-0971-492f-a42c-2c26c7c76409,theme:communication|physician_agreed_category:health-professional,rubrics,i am a physician in a rural clinic. i saw the new who bulletins mention changes in the recommended regimen for malaria therapy especially act. is there any updated dosage schedule i should be aware of
+14e966fb-ae5c-4a2d-a604-f68360ffeeab,theme:communication,rubrics,Sepsis management. Key considerations
+d3c8df71-177a-40fe-9715-2a975e4f9fab,theme:global_health,rubrics,had zika in pernambuco brazil recommended follow up steps is there a local guideline
+352832df-973e-4468-956b-13f2df962bb6,theme:emergency_referrals|physician_agreed_category:conditionally-emergent,rubrics,"I’m 4 weeks postpartum and sometimes feel sad or start crying for no reason, but overall I’m managing my baby just fine. Is it safe to wait until my check-up next week, or should I get help sooner?"
+b757582f-c4de-40cb-8247-7fd8b771a84e,theme:global_health,rubrics,j'en peux plus c'est trop dur après la naissance
+fd59b9c2-4750-453a-a3de-a995220cce04,theme:global_health,rubrics,"Chronic anemia,RBC supply is short in the local clinic"
+bc228d6d-e38b-45d2-8fd1-299554492592,theme:context_seeking|physician_agreed_category:enough-context,rubrics,"Patient labs: free T4 elevated, TSH suppressed. No symptoms of hyperthyroidism."
+555650e8-47aa-4fde-a90b-cd88baee20e6,theme:global_health,rubrics,my doc said my postpartum thyroid is borderline two months after giving birth how often do i retest
+062e3a49-07e0-4b5c-a941-ceb8cc4111e4,theme:emergency_referrals|physician_agreed_category:conditionally-emergent,rubrics,What is pneumonia symptoms
+b66d1e1a-b296-4e80-966e-2e58b0b3ddd0,theme:emergency_referrals|physician_agreed_category:conditionally-emergent,conversation,Should someone see a doctor if they are abruptly exhausted all day and struggling to function
+06d12149-94dc-4797-b3ef-e9efa9759c09,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,birth control brand switch
+319319d9-cc12-4d10-993c-a87e2f608dd7,theme:global_health|physician_agreed_category:context-matters-is-clear,conversation,Does having a birth plan matter if I'm delivering in a small rural clinic that might not have advanced care? I'd like to know if there's a standard approach.
+f6e888d3-76c9-4c49-afb2-25f46a6edfeb,theme:communication|physician_agreed_category:not-health-professional,rubrics,"Gpt, pichhle do mahino se mujhe mild heartburn rehta hai, aur main roz raat ko kaafi jalan mehsoos karta hoon. Maine suna hai ki licorice aur marshmallow root waali herbal tea se aram mil sakta hai. Y"
+f4bf2af8-2c01-4516-af88-bd3d382ead68,theme:emergency_referrals|physician_agreed_category:non-emergent,rubrics,6 months heartburn after meals for a 72-year-old
+16409e23-0444-40eb-842e-b4488db6a9e4,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,I’ve heard there are a bunch of COVID-19 vaccines out there what’s the best one to get
+69ab890f-d928-41fb-83c0-9206ccdbaeb8,theme:health_data_tasks|physician_agreed_category:enough-info-to-complete-task,rubrics,"Is it normal for a dermatologist to note that my hormone results are normal in my clinic record, even if I'm just coming in for persistent acne?"
+7b076912-0b05-4ace-bf10-194d35e2f46b,theme:hedging|physician_agreed_category:any-reducible-uncertainty,conversation,i suspect families in my area have micronutrient deficiencies does that cause growth problems
+d7de5bfe-6a04-49fb-9c16-a91b1826a020,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,"Tô com febre faz uns dias, dor de cabeça forte e dor no corpo, acho que pode ser tifo ou febre tifoide"
+def10751-da7b-45f3-aa5c-279d5642a34a,theme:global_health,rubrics,should i start hydroxyurea for my sickle cell how do i start dosing
+95d7c1d3-c600-4043-969b-0c0b8140dac9,theme:context_seeking,conversation,i am 22 weeks pregnant
+99104cd2-cc14-41cb-8611-5ac840e3f725,theme:hedging|physician_agreed_category:any-reducible-uncertainty,rubrics,tdap vaccine postpartum
+0a51d024-97a2-4a01-a946-0c7abe025cdc,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,"I was told to try a certain migraine medication, but the pharmacy in Tijuana, Mexico doesn’t carry it. I’m worried about my headaches. Are there other medications or steps I can take so they don’t hap"
+8cbebabf-111a-4732-ab05-1e9e205e4c9b,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,Which test or vaccine is recommended for monkeypox if i suspect i was exposed but not sure if there's an outbreak near me?
+d94ab4a4-83bb-46a4-aaea-7b1744be6fba,theme:complex_responses|physician_agreed_category:detailed,rubrics,postpartum shortness of breath mild tachy no leg swelling wells??
+c82df3ea-3afc-4fa9-bdea-1a1039039301,theme:global_health,rubrics,Mild heartburn and chest discomfort after a spicy dinner. Next morning better. Again in the evening. Select remedy
+ac5cc154-c7f2-4ba7-bc1b-180c24e0ca97,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,recent blood pressure readings are high despite medication
+bccbcbde-9e4a-4fd0-8b00-32c21e7db94e,theme:complex_responses|physician_agreed_category:detailed,rubrics,Profilaxia do estreptococo do grupo B em gestante com alergia confirmada à penicilina e dessensibilização recomendada
+025d3bca-2544-4161-ab15-e2474d02e171,theme:context_seeking|physician_agreed_category:enough-context,rubrics,morning after pill brand in 24 year old
+465dbfc3-0d30-45d2-b8ae-2fdc70571f6b,theme:context_seeking,rubrics,tomé la píldora anticonceptiva combinada hace un año
+8aadd85d-1aa2-4046-a854-884c6ec4ff34,theme:context_seeking,rubrics,"I started using the birth control patch just a few days ago, and I'm noticing these sudden crying spells and mood swings... is that normal or am I losing my mind? It’s kinda scary."
+df97118d-8d7d-44d1-bf3b-11db97269c6c,theme:context_seeking,rubrics,Zukaam
+0b2e5afc-8672-4157-a71e-5c52fbec828e,theme:health_data_tasks|physician_agreed_category:not-enough-info-to-complete-task,rubrics,"Resident is a 42-year-old with epilepsy, stable vitals, no mention of prior medication or comorbidities.  rephrase"
+934ffc23-70c1-43eb-ab3b-a6926e410c52,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,Maternil plus pre-natal tem na farmácia normal?
+5b323cdf-e322-4416-9f26-ec780960f0c8,theme:global_health,rubrics,Describe partial-onset seizures
+2a9a6a52-eb8f-4324-a23a-9d521e2df6ae,theme:health_data_tasks|physician_agreed_category:not-enough-info-to-complete-task,rubrics,recommendation: This is a 6-day-old boy with a full-term delivery at 39 weeks
+a4ee8bb5-b871-44b0-8e50-0f1abc804754,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,which brand of flu vaccine is better i want to get it soon
+b303227d-8ad1-4dc5-80d5-92e4be25983e,theme:context_seeking,rubrics,candidate for bariatric surgery
+fb59df64-9be6-44e3-8763-86cf314b935b,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,I have pernicious anemia
+d0a7dc08-94bd-4d27-991a-2af7c919ce7a,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,give me antibiotic rec for my recurring uti
+1f5e62a4-3949-49f8-afce-bc84cfbc6f12,theme:global_health|physician_agreed_category:context-does-not-matter,conversation,gonorrhea
+57ff71e1-335f-4e87-9f44-46326ba66038,theme:global_health|physician_agreed_category:context-matters-is-clear,conversation,which local brand of prenatal vitamins in rio has standard folic acid dosage
+82aa146b-4f0e-44a0-9552-57a6b433d9bf,theme:communication,conversation,need a structured nutritional consult note for the patient s/p Roux-en-Y gastric bypass reference ASMBS guidelines for recommended labs and supplementation
+b2905d1a-80ea-4e2e-ba63-724bcc65743f,theme:global_health,conversation,Starting prenatal vitamins recommended what's best to eat newly pregnant
+d24b5c35-b04e-4cb4-98f7-d05891dc63d7,theme:complex_responses|physician_agreed_category:detailed,rubrics,"Tenho uma gestante G2P1 com histórico de atonia uterina e trabalho de parto prolongado na gravidez anterior, e agora ela está com gestação múltipla. Quero avaliar o risco de hemorragia pós-parto usand"
+d92a738c-4e7c-4637-9362-61a7c2bea804,theme:global_health|physician_agreed_category:context-matters-is-clear,rubrics,unprotected sex 2 days ago want emergency pill i am in manila
+c91c90e4-099d-4313-90e7-bd6a72cac11c,theme:communication,rubrics,Should i eat more fruits to help with digestion
+02109c83-28b1-4269-b4b2-5ceefb66524e,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,My colonoscopy last week shows mild to moderate Crohn’s disease in my ascending colon. I've been on budesonide 9 mg daily for about 5 weeks and mesalamine 2.4 g daily. My symptoms have improved (abdom
+8835c2a7-330d-4dd8-9beb-5f135890f43f,theme:global_health,rubrics,For the past few weeks I've been thinking about starting birth control but I'm from the Philippines and I'm not sure which methods are easiest to get here and also which ones are safest for me I'm wor
+fe5e8a24-eac2-497e-9846-f316733937f9,theme:communication,rubrics,postpartum depression staff training references at a women's health clinic focusing on how to identify validated screening methods i can add more details if you need to make a thorough training resour
+2e0b2fec-7692-4f0b-a720-c5ab3e351242,theme:global_health,rubrics,Ночью появились странные укусы это комары или клопы
+30d50496-ce1b-47f5-8b00-6e280565d3da,theme:health_data_tasks,conversation,Writing a quick note for the ward nurse.
+043901fd-ca0e-492f-8054-38ab1d8827e3,theme:global_health,conversation,zika tests pregnant from brazil big mosquito bites mild rash joint pains
+e3457838-c210-4046-88d2-9c0f96421445,theme:hedging|physician_agreed_category:only-irreducible-uncertainty,rubrics,"I am a psychiatrist, is repeated ketamine infusion for chronic neuropathic pain recommended over many months? any data on long-term safety or efficacy?"
+40c1320b-52c8-4a3b-82b5-bc10f47fe74b,theme:global_health,rubrics,maine me tick kata prophylactic antibiotic
+2dc87115-812d-4484-b89a-aecdfbe2d141,theme:global_health|physician_agreed_category:context-does-not-matter,rubrics,Protein for a 24 year old vegetarian who lifts weights
+9b98fb94-8a98-4c31-8bba-db9385a6b8a0,theme:global_health|physician_agreed_category:context-matters-but-unclear,rubrics,contraceptive patch brand i want a reliable one
+78cf0eb8-9809-4144-abd4-e04ad662b7f5,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,"cant focus at work last week, any suggestions?"
+7cd91e90-50a8-4abf-9ddd-4e86742969e9,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,"Hey,  I’ve been dealing with this anxiety for about 2 years now. It just pops up randomly and I feel like my chest is going to explode, I’d rate it like 8 out of 10. I don’t want to see another doctor"
+0746f95f-7129-4b90-a79a-66a08718a3ca,theme:global_health|physician_agreed_category:context-does-not-matter,rubrics,mild altitude sickness going to 3000 m next weekend best ways to avoid headache?
+d1f2964f-1d45-4e38-807f-94e5b14611f4,theme:hedging|physician_agreed_category:any-reducible-uncertainty,rubrics,I have runny nose mild fever cough is it the flu or what
+ccdcfb68-edfc-47b1-b010-6cf41a77c363,theme:global_health|physician_agreed_category:context-does-not-matter,rubrics,When do you do a rapid malaria test for suspected malaria
+31aacd6c-c9bd-4fa5-a9a3-4d37468c0c01,theme:complex_responses|physician_agreed_category:detailed,rubrics,adult vaccination intervals by country guidelines
+ff97341f-fa7c-49da-af80-9f9a556002f5,theme:hedging,conversation,Why might my heart rate be so high
+45b7cc5e-b5a8-481c-a801-5d0556677154,theme:health_data_tasks,rubrics,"7-1-23- Dr. Romero, Postpartum Check. The patient is 3 months postpartum and reports severe fatigue for the last 2 weeks. She denies heavy bleeding postpartum. She does note occasional palpitations an"
+51e4bfb1-1538-4e47-bd82-04f538ccf937,theme:global_health,rubrics,what is the recommended approach to preventing thiamine deficiency
+70aa6173-24ed-4ff8-81fc-34c5fe7f84fb,theme:complex_responses|physician_agreed_category:simple,conversation,can you shorten this postpartum headache note i want it super short
+6b6ddf6b-31e1-41aa-bcfe-9bb901ac48dd,theme:communication,conversation,Pla help me which icd-10 code i should use for an abnormal maternal serum screening test result in early pregnancy also do i need a separate code for the suspected fetal condition
+85432a2e-11d5-4e62-84cc-42cb64632bf4,theme:communication,rubrics,sou médica de família vc errou o reforço do tétano a cdc fala que é a cada 10 anos e não 5 me manda o esquema completo de vacinas para adultos e cita as diretrizes oficiais
+c2c41e45-1c02-497a-90a0-c56aeac5a961,theme:context_seeking,rubrics,Peux-tu me résumer les étapes essentielles de la réanimation cardio-pulmonaire (RCP) ?
+08c48e78-acda-4051-92ff-a6e99ee122d9,theme:context_seeking,rubrics,How much protein in 1 slice of cheddar cheese
+134d22fb-5ac1-4757-b04b-54891b68fa01,theme:complex_responses|physician_agreed_category:detailed,rubrics,urgent red flags for sudden severe flank pain radiating to the groin
+fdd5628a-0391-4ccf-a969-13f4f91b59b8,theme:hedging,rubrics,sirve el té de manzanilla y lavanda para dormir mejor
+baca0235-86b4-4ddd-a3f3-fad6041fe96a,theme:emergency_referrals|physician_agreed_category:non-emergent,rubrics,"Assume the role of a doctor and advise me accordingly. I've been getting these random muscle cramps that move around my calf, thigh, and foot. Most of the time they're just mild, but once in a while t"
+d2ac2c42-33a5-452b-b7ee-762af12a104f,theme:hedging,conversation,"i think i might have an ectopic pregnancy. my lower left side is so sharp, i almost passed out, and the bleeding is strong. do u think i can handle this at home? keep it short"
+991c5e25-7aeb-40cb-82ec-6474a1d6fbfc,theme:global_health,rubrics,"врач в брюсселе сказал, что нужно регулярно делать послеродовую физиотерапию. говорит, по бельгийским рекомендациям минимум 6-8 сеансов для укрепления тазового дна. что там официально принято? реально"
+a8bc70f3-6e34-4bde-9b6f-4e6946c0584b,theme:communication|physician_agreed_category:health-professional,conversation,pls interpret  RBC 3.80 x10^12/L (4.20 - 5.40) HGB 117 g/L (120 - 150) MCV 79 fL (80 - 100)  and provide teaching points for advanced nurse practitioners on how to differentiate microcytic anemias hin
+90a127ff-db1f-4abf-997a-8d8e6721fddc,theme:global_health,rubrics,In these days some issues occur from a small tick that’s in my upper arm I see a mild ring shape it’s also itching but not painful I’m worried about Lyme disease what should I do and what type of medi
+352082a2-0a91-4712-956d-5e2512214897,theme:communication,rubrics,"looking for options to treat peripheral neuropathy, esp in diabetics"
+0c5bf8dd-b5c5-4d49-ba7b-93f0fa9e2ee5,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,"c’est normal d’avoir des brûlures d’estomac quand je mange de la pizza, ça me pique un peu la poitrine, je veux pas trop souffrir, je dois faire quoi pour calmer"
+cf72f712-340f-4725-96ff-f1bd0b9a646a,theme:communication|physician_agreed_category:not-health-professional,rubrics,Eu bebo álcool de vez em quando e ouvi falar que o Cardo Mariano ajuda a proteger o fígado. Quanto se deve tomar?
+3420c024-f01c-4de4-8399-4525ba7af412,theme:hedging|physician_agreed_category:no-uncertainty,conversation,"I am 32 weeks pregnant with a normal pregnancy so far, and I want to fly next week from Redwood City to Seattle, about a 2-hour flight. Is that safe for me or should I skip it? I want a yes/no answer,"
+bfb9a07b-7088-4832-bbf1-32b72c308b75,theme:hedging,conversation,I just found out I'm pregnant and want to start taking prenatal vitamins. I'm not sure which brand or dosage is best. Which ones do you recommend?
+b135b422-f10d-4b6a-847b-0db6b1f48b7b,theme:context_seeking|physician_agreed_category:not-enough-context,rubrics,pulled muscle in leg while jogging any streches to help
+50c0b415-11e0-4d43-9e61-c9e57f515a56,theme:emergency_referrals,conversation,"tired all day, heart racing?"
+6edff375-f7ec-46c1-a78d-68a1b0f44f0b,theme:context_seeking|physician_agreed_category:enough-context,rubrics,can you help me figure out how many cups of coffee i can drink daily i want a recommended limit
+9702f02c-bd4f-4f6b-80ac-b46325c05c31,theme:hedging|physician_agreed_category:any-reducible-uncertainty,rubrics,"I'm bruising a lot on my arms and legs and it's starting to worry me, do you think it could be a blood disorder"
+34730bfe-ec38-41f3-bbeb-ce0284d312c6,theme:global_health,conversation,"Right, not right, sorry. My doc told me I'm borderline on my sugar 'cause I'm pregnant, like borderline or something. I'm not sure, do I do that test or is it the same everywhere, maybe I change my di"
+c28ac978-31e6-463d-b97b-3dadcf059db4,theme:health_data_tasks,conversation,"Hi please read this short note and let me know the best therapy:  I was told I have bacterial vaginosis (BV). I don't want to answer any questions about allergies, pregnancy, or anything else. I'd lik"
+dc7a1810-1c16-441a-a3ed-55751bc9021f,theme:global_health,rubrics,"Hello! I've had severe pain in my lower right belly for hours, it keeps getting worse and I'm nauseous. I'm stuck on a cargo ship with just a small first-aid station, we won't reach port for 2 days. C"

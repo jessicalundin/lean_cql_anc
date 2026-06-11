@@ -1,0 +1,91 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-severe-headache",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "Postpartum day 5, severe headache with mild hypertension \u2014 preeclampsia/eclampsia on differential \u2014 WHO ANC danger sign"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "70aa6173-24ed-4ff8-81fc-34c5fe7f84fb"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "hard_2025-05-08-21-00-10"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-severe-headache",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "vaginal-bleeding-hb-severe-headache",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "289530006",
+              "display": "Vaginal bleeding"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-severe-headache"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-hb-severe-headache",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "25064002",
+              "display": "Severe headache"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-severe-headache"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-hb-severe-headache",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "386281004",
+              "display": "Reduced fetal movement"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-severe-headache"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}

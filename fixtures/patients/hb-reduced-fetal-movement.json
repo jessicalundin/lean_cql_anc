@@ -1,0 +1,117 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-reduced-fetal-movement",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "37 weeks GA, decreased fetal movements for 1 day, NST shows decelerations \u2014 WHO ANC danger sign"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "cfe03880-3f9c-4bd7-a485-8ee23105402a"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-09-20-00-46"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-reduced-fetal-movement",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-hb-reduced-fetal-movement",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "49051-6",
+              "display": "Gestational age in weeks"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-reduced-fetal-movement"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {
+          "value": 37,
+          "unit": "wk",
+          "system": "http://unitsofmeasure.org",
+          "code": "wk"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "vaginal-bleeding-hb-reduced-fetal-movement",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "289530006",
+              "display": "Vaginal bleeding"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-reduced-fetal-movement"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-hb-reduced-fetal-movement",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "25064002",
+              "display": "Severe headache"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-reduced-fetal-movement"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-hb-reduced-fetal-movement",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "386281004",
+              "display": "Reduced fetal movement"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-reduced-fetal-movement"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true
+      }
+    }
+  ]
+}

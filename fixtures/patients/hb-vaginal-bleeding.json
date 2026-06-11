@@ -1,0 +1,91 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-vaginal-bleeding",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "Early pregnancy, suspected ectopic \u2014 severe unilateral pain, strong vaginal bleeding, near-syncope \u2014 WHO ANC danger sign"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "d2ac2c42-33a5-452b-b7ee-762af12a104f"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "hard_2025-05-08-21-00-10"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-vaginal-bleeding",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "vaginal-bleeding-hb-vaginal-bleeding",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "289530006",
+              "display": "Vaginal bleeding"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-vaginal-bleeding"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-hb-vaginal-bleeding",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "25064002",
+              "display": "Severe headache"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-vaginal-bleeding"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-hb-vaginal-bleeding",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "386281004",
+              "display": "Reduced fetal movement"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-vaginal-bleeding"
+        },
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}
