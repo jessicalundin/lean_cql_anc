@@ -1,0 +1,73 @@
+{
+  "resourceType": "Bundle",
+  "id": "reduced-fetal-movement",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "36 weeks GA, reduced fetal movement — danger sign"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-reduced-fetal-movement",
+        "gender": "female",
+        "birthDate": "1999-03-20"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-rfm",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        },
+        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {"value": 36, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "vaginal-bleeding-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "289530006", "display": "Vaginal bleeding"}]
+        },
+        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "25064002", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "386281004", "display": "Reduced fetal movement"}]
+        },
+        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true
+      }
+    }
+  ]
+}

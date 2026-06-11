@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "leanprover.lean4",
+    "redhat.vscode-yaml",
+    "ms-python.python",
+    "dbaeumer.vscode-eslint"
+  ]
+}

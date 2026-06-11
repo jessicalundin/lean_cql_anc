@@ -1,0 +1,6 @@
+{
+  "name": "lean-cql-anc-space",
+  "private": true,
+  "type": "module",
+  "description": "v0.1 uses scripts/eval_cql.js; cql-execution wired in v0.2"
+}

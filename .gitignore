@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+lean/.lake/
+lean/lake-packages/
+space/artifacts/_tmp_patient.json
+node_modules/

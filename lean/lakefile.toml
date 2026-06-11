@@ -1,0 +1,9 @@
+name = "lean_cql_anc"
+version = "0.1.0"
+
+[[lean_lib]]
+name = "LeanCqlAnc"
+
+[[lean_exe]]
+name = "anc-eval"
+root = "AncEval.Main"

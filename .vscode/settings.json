@@ -1,0 +1,23 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "lean4.inputLeanVersion": "leanprover/lean4:stable",
+  "lean4.infoview.showGoalNames": true,
+  "lean4.infoview.showExpectedType": true,
+  "lean4.infoview.autoOpen": true,
+  "files.associations": {
+    "*.cql": "sql",
+    "lakefile.toml": "toml"
+  },
+  "editor.formatOnSave": true,
+  "[lean]": {
+    "editor.wordBasedSuggestions": "off"
+  },
+  "search.exclude": {
+    "**/.lake": true,
+    "**/node_modules": true
+  },
+  "files.watcherExclude": {
+    "**/.lake/**": true
+  }
+}

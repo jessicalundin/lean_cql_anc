@@ -1,0 +1,55 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "uv: sync",
+      "type": "shell",
+      "command": "uv sync",
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "none"
+    },
+    {
+      "label": "uv: run Space (Gradio)",
+      "type": "shell",
+      "command": "uv run python space/app.py",
+      "options": { "cwd": "${workspaceFolder}" },
+      "dependsOn": ["uv: sync"],
+      "group": { "kind": "test", "isDefault": false }
+    },
+    {
+      "label": "Lean: lake build",
+      "type": "shell",
+      "command": "lake build",
+      "options": { "cwd": "${workspaceFolder}/lean" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$lean4"]
+    },
+    {
+      "label": "Lean: anc-eval (bleeding fixture)",
+      "type": "shell",
+      "command": ".lake/build/bin/anc-eval ../fixtures/patients/danger-sign-bleeding.json",
+      "options": { "cwd": "${workspaceFolder}/lean" },
+      "dependsOn": ["Lean: lake build"]
+    },
+    {
+      "label": "CQL: eval prototype (Node)",
+      "type": "shell",
+      "command": "node space/scripts/eval_cql.js fixtures/patients/danger-sign-bleeding.json",
+      "options": { "cwd": "${workspaceFolder}" }
+    },
+    {
+      "label": "Space: prepare HF deploy",
+      "type": "shell",
+      "command": "./scripts/prepare-space.sh ${input:hfSpaceDir}",
+      "options": { "cwd": "${workspaceFolder}" }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "hfSpaceDir",
+      "type": "promptString",
+      "description": "Path to cloned HF Space directory",
+      "default": "/tmp/hf-lean-cql-anc"
+    }
+  ]
+}

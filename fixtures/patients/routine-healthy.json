@@ -1,0 +1,73 @@
+{
+  "resourceType": "Bundle",
+  "id": "routine-healthy",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "28 weeks GA, no danger signs — routine ANC follow-up"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-routine-healthy",
+        "gender": "female",
+        "birthDate": "1997-09-10"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-routine",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        },
+        "subject": {"reference": "Patient/patient-routine-healthy"},
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {"value": 28, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "vaginal-bleeding-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "289530006", "display": "Vaginal bleeding"}]
+        },
+        "subject": {"reference": "Patient/patient-routine-healthy"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "25064002", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-routine-healthy"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://snomed.info/sct", "code": "386281004", "display": "Reduced fetal movement"}]
+        },
+        "subject": {"reference": "Patient/patient-routine-healthy"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}
