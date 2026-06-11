@@ -82,9 +82,12 @@ def _load_scenarios() -> None:
         return
     for path in sorted(FIXTURES.glob("*.json")):
         bundle = json.loads(path.read_text())
+        exts = bundle.get("extension", [])
+        # Only include fixtures that have a HealthBench conversation
+        if not any("healthbench-conversation" in e.get("url", "") for e in exts):
+            continue
         summary = next(
-            (e["valueString"] for e in bundle.get("extension", [])
-             if "clinical-summary" in e.get("url", "")),
+            (e["valueString"] for e in exts if "clinical-summary" in e.get("url", "")),
             path.stem,
         )
         SCENARIOS[summary] = str(path)
