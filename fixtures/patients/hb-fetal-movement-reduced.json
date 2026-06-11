@@ -1,0 +1,98 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-fetal-movement-reduced",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "37 weeks GA, decreased fetal movements + NST decelerations — reduced fetal movement (Lean extension field); no ANCDT01 danger sign directly triggered, but urgent fetal concern"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "cfe03880-3f9c-4bd7-a485-8ee23105402a"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-08"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"37 weeks gestation, decreased fetal movements over the past day. next steps?\", \"role\": \"user\"}, {\"content\": \"At 37 weeks with decreased fetal movements, it's important to assess fetal well-being promptly. You should initiate fetal monitoring, starting with a non-stress test to evaluate the heart rate pattern and responsiveness. If results are non-reassuring, consider a biophysical profile and further obstetric evaluation.\", \"role\": \"assistant\"}, {\"content\": \"non-stress test shows decelerations. what's the management plan?\", \"role\": \"user\"}]"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-fetal-movement-reduced",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-hb-fetal-movement-reduced",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-fetal-movement-reduced"},
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {"value": 37, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bleeding-vaginally-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-fetal-movement-reduced"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-fetal-movement-reduced"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-fetal-movement-reduced"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE48", "display": "Reduced or no fetal movements"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-fetal-movement-reduced"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true,
+        "note": [{"text": "decreased fetal movements over the past day; NST shows decelerations"}]
+      }
+    }
+  ]
+}

@@ -4,5 +4,6 @@ __pycache__/
 .DS_Store
 lean/.lake/
 lean/lake-packages/
-space/artifacts/_tmp_patient.json
+space/artifacts/
+artifacts/
 node_modules/

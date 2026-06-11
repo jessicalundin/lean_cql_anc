@@ -37,7 +37,7 @@ COPY lean/ /app/lean/
 # App, fixtures, CQL, scripts
 COPY fixtures/ /app/fixtures/
 COPY cql/ /app/cql/
-COPY app.py README.md package.json ./
+COPY app.py README.md ./
 
 EXPOSE 7860
 ENV PATH="/app/.venv/bin:${PATH}"

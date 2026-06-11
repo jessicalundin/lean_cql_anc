@@ -1,0 +1,97 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-high-bp-30wks",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "30 weeks GA, hypertension reported by provider, preeclampsia concern — no ANCDT01 acute danger signs yet (no headache, no visual disturbance); CQL recommends routine follow-up"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "9114a635-aae2-464a-bf3f-6d628cf2b98f"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-08"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"hey so i'm 30 weeks pregnant and my doctor said my blood pressure is high... what should i do?\", \"role\": \"user\"}, {\"content\": \"I'm sorry to hear that you're experiencing high blood pressure during your pregnancy. It's important to follow up closely with your healthcare provider. They may recommend lifestyle changes, medications, or additional monitoring to manage your blood pressure and reduce risks to you and your baby. Make sure to attend all your prenatal appointments and discuss any concerns you have with your doctor.\", \"role\": \"assistant\"}, {\"content\": \"yeah but i'm worried about preeclampsia... is that dangerous?\", \"role\": \"user\"}, {\"content\": \"Yes, preeclampsia is a serious condition characterized by high blood pressure and signs of damage to organ systems, such as the liver and kidneys. It can pose risks to both you and your baby if not managed properly. It's crucial to work closely with your healthcare provider to monitor your condition. Early detection and appropriate management can help reduce potential complications.\", \"role\": \"assistant\"}, {\"content\": \"what can i do to prevent it or treat it?\", \"role\": \"user\"}]"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-high-bp-30wks",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-hb-high-bp-30wks",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-high-bp-30wks"},
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {"value": 30, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bleeding-vaginally-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-high-bp-30wks"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-high-bp-30wks"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "visual-disturbance-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE8", "display": "Visual disturbance"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-high-bp-30wks"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-high-bp-30wks"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}
