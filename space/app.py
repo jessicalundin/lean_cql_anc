@@ -592,10 +592,11 @@ def build_ui() -> gr.Blocks:
                     )
                     strip_ga = gr.Checkbox(label="Remove gestational age", value=False)
                     strip_signs = gr.Checkbox(label="Mark all signs as not assessed", value=False)
-                evaluate_btn = gr.Button("Evaluate", variant="primary")
 
                 with gr.Accordion("Clinical conversation (HealthBench source)", open=True):
-                    conv_out = gr.Markdown(value="_Select a HealthBench scenario and click Evaluate._")
+                    conv_out = gr.Markdown(value="_Select a scenario above, then click Evaluate._")
+
+                evaluate_btn = gr.Button("Evaluate", variant="primary")
 
                 with gr.Accordion("Step 1 — Danger signs in FHIR (WHO ANC codes)", open=True):
                     gr.Markdown(
