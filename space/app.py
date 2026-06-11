@@ -111,18 +111,29 @@ def _obs_code(resource: dict) -> str | None:
     return None
 
 
-def get_conversation(bundle: dict) -> list[dict] | None:
+def get_conversation_meta(bundle: dict) -> dict | None:
+    """Return HealthBench metadata dict or None if no conversation extension."""
+    exts = bundle.get("extension", [])
     raw = next(
-        (e["valueString"] for e in bundle.get("extension", [])
-         if "healthbench-conversation" in e.get("url", "")),
+        (e["valueString"] for e in exts if "healthbench-conversation" in e.get("url", "")),
         None,
     )
     if raw is None:
         return None
     try:
-        return json.loads(raw)
+        turns = json.loads(raw)
     except Exception:
         return None
+    return {
+        "turns": turns,
+        "prompt_id": next((e["valueString"] for e in exts if "healthbench-prompt-id" in e.get("url", "")), None),
+        "dataset": next((e["valueString"] for e in exts if "healthbench-dataset" in e.get("url", "")), None),
+    }
+
+
+def get_conversation(bundle: dict) -> list[dict] | None:
+    meta = get_conversation_meta(bundle)
+    return meta["turns"] if meta else None
 
 
 def _conversation_text(turns: list[dict]) -> str:
@@ -332,8 +343,23 @@ def build_lean() -> Generator[str, None, None]:
 
 # ── Markdown helpers ──────────────────────────────────────────────────────────
 
-def _conversation_md(turns: list[dict]) -> str:
-    lines = []
+def _conversation_md(meta: dict) -> str:
+    turns = meta.get("turns", [])
+    prompt_id = meta.get("prompt_id")
+    dataset = meta.get("dataset")
+
+    header_parts = []
+    if prompt_id:
+        header_parts.append(f"**Prompt ID:** `{prompt_id}`")
+    if dataset:
+        header_parts.append(f"**Dataset:** `{dataset}`")
+    header = "  ·  ".join(header_parts)
+
+    roles = {t.get("role") for t in turns}
+    one_sided = "assistant" not in roles and len(turns) > 0
+    note = "\n\n_⚠ This entry shows the initial query only — no assistant response in the HealthBench record._" if one_sided else ""
+
+    lines = [header, ""] if header else []
     for t in turns:
         role = t.get("role", "")
         content = t.get("content", "").strip()
@@ -342,7 +368,7 @@ def _conversation_md(turns: list[dict]) -> str:
         else:
             lines.append(f"**Assistant:** {content}")
         lines.append("")
-    return "\n".join(lines)
+    return "\n".join(lines) + note
 
 
 def _extraction_md(extraction: dict) -> str:
@@ -428,7 +454,7 @@ def evaluate_fixture(
         return "", "", "", "", "", ""
 
     bundle = json.loads(Path(SCENARIOS[scenario_label]).read_text())
-    conversation = get_conversation(bundle)
+    conv_meta = get_conversation_meta(bundle)
 
     # Strip modifiers
     if strip_ga:
@@ -468,7 +494,7 @@ def evaluate_fixture(
         "danger_signs": detected_signs,
     }
 
-    conv_md = _conversation_md(conversation) if conversation else "_No conversation in this fixture._"
+    conv_md = _conversation_md(conv_meta) if conv_meta else "_No conversation in this fixture._"
     extraction_md = _extraction_md(extraction_display)
     fhir_note = _fhir_extraction_note(extraction_display)
     results_md = _results_md(cql_out, lean_out)
