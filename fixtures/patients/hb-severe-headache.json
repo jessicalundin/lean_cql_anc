@@ -1,0 +1,86 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-severe-headache",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "26yo pregnant, gestational age unknown, frequent intense headaches past few weeks, mild anemia, no known complications — ANC.B5.DE7 (severe headache) positive; no bleeding, no visual disturbance (preeclampsia danger sign isolated)"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "29b413d1-1c8b-4190-ae12-5f178967aa9d"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-08"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"What is a recommended approach for a 26 year old pregnant woman who has been dealing with frequent headaches for the past few weeks, which have gotten quite intense and is now looking for immediate relief. She wants to know if it is safe to take ibuprofen. She isn't sure how far along she is or if that might matter, and she has no known complications beyond mild anemia.\", \"role\": \"user\"}]"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-severe-headache",
+        "gender": "female",
+        "birthDate": "1998-01-01"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bleeding-vaginally-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-severe-headache"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-severe-headache"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true,
+        "note": [{"text": "frequent headaches for past few weeks, now quite intense; seeking immediate relief"}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "visual-disturbance-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE8", "display": "Visual disturbance"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-severe-headache"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-severe-headache"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}

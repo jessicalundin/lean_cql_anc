@@ -1,0 +1,86 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-late-decelerations",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "Term gestation (GA unspecified), recurrent late decelerations on CTG over 20 min, light vaginal bleeding, mother hemodynamically stable — fetal compromise concern; ANC.B5.DE3 (bleeding) positive + non-reassuring fetal monitoring (possible C-section indication)"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "2a2c7d89-7931-4de9-bc96-ae5b96fafa5a"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-08"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"Late decelerations on the fetal heart monitor not sure if emergent C-section is needed could it be a normal variant?\", \"role\": \"user\"}, {\"content\": \"Late decelerations can sometimes signal uteroplacental insufficiency, but additional factors must be considered before deciding on an emergent C-section.\", \"role\": \"assistant\"}, {\"content\": \"They occurred a few times in the last 20 minutes mother is stable but I\\u2019m not sure if we should rush to surgery\", \"role\": \"user\"}, {\"content\": \"Intermittent late decelerations can be mild or indicate the beginning of fetal compromise.\", \"role\": \"assistant\"}, {\"content\": \"I noticed some light vaginal bleeding not sure if it\\u2019s connected\", \"role\": \"user\"}, {\"content\": \"Light vaginal bleeding can have multiple causes. If the fetal heart tracings remain consistently nonreassuring or the bleeding intensifies, evaluate for possible abruption.\", \"role\": \"assistant\"}, {\"content\": \"So do we move forward with a C-section or keep monitoring?\", \"role\": \"user\"}]"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-late-decelerations",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bleeding-vaginally-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true,
+        "note": [{"text": "light vaginal bleeding; etiology unclear, possible abruption"}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "reduced-fetal-movement-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE48", "display": "Reduced or no fetal movements"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true,
+        "note": [{"text": "recurrent late decelerations on CTG over past 20 minutes — non-reassuring fetal status"}]
+      }
+    }
+  ]
+}

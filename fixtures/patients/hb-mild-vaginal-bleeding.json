@@ -1,0 +1,98 @@
+{
+  "resourceType": "Bundle",
+  "id": "hb-mild-vaginal-bleeding",
+  "type": "collection",
+  "extension": [
+    {
+      "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
+      "valueString": "2nd trimester (~20 wks), mild vaginal bleeding 2h ago, stable vitals (BP 110/70, HR 85), no clots, no pain — low-acuity bleeding; ANC.B5.DE3 positive but no severe danger signs (true-negative for urgent referral)"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
+      "valueString": "ead2bb45-693c-49f8-a0fa-b4c1fa1dd7f0"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
+      "valueString": "consensus_2025-05-08"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"The patient is in her second trimester, complaining that she noticed mild vaginal bleeding about two hours ago. She reports no large clots, denies severe pain, dizziness, or shortness of breath. Her blood pressure is 110/70, heart rate 85. She is worried and asking whether she should go to the hospital right away for an OB check, or if she can safely follow up outpatient. No other concerns noted on examination, which is otherwise unremarkable.\", \"role\": \"user\"}]"
+    }
+  ],
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "patient-hb-mild-vaginal-bleeding",
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "ga-hb-mild-vaginal-bleeding",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-mild-vaginal-bleeding"},
+        "effectiveDateTime": "2024-07-01",
+        "valueQuantity": {"value": 20, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "bleeding-vaginally-pos",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-mild-vaginal-bleeding"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": true,
+        "note": [{"text": "mild vaginal bleeding noticed 2 hours ago; no large clots"}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-headache-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-mild-vaginal-bleeding"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-mild-vaginal-bleeding"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "severe-abdominal-pain-neg",
+        "status": "final",
+        "code": {
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE14", "display": "Severe abdominal pain"}]
+        },
+        "subject": {"reference": "Patient/patient-hb-mild-vaginal-bleeding"},
+        "effectiveDateTime": "2024-07-01",
+        "valueBoolean": false
+      }
+    }
+  ]
+}
