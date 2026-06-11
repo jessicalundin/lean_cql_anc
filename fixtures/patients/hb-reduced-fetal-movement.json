@@ -14,6 +14,10 @@
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
       "valueString": "consensus_2025-05-09-20-00-46"
+    },
+    {
+      "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
+      "valueString": "[{\"content\": \"37 weeks gestation, decreased fetal movements over the past day. next steps?\", \"role\": \"user\"}, {\"content\": \"At 37 weeks with decreased fetal movements, it's important to assess fetal well-being promptly. You should initiate fetal monitoring, starting with a non-stress test to evaluate the heart rate pattern and responsiveness. If results are non-reassuring, consider a biophysical profile and further obstetric evaluation.\", \"role\": \"assistant\"}, {\"content\": \"non-stress test shows decelerations. what's the management plan?\", \"role\": \"user\"}]"
     }
   ],
   "entry": [

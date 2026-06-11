@@ -24,6 +24,11 @@ DANGER_SIGN_CODES = {
     "25064002":  "severe_headache",
     "386281004": "reduced_fetal_movement",
 }
+DANGER_SIGN_LABELS = {
+    "vaginal_bleeding":       "Vaginal bleeding",
+    "severe_headache":        "Severe headache",
+    "reduced_fetal_movement": "Reduced fetal movement",
+}
 GA_LOINC = "49051-6"
 
 SCENARIOS: dict[str, str] = {}
@@ -54,15 +59,14 @@ def _observations(bundle: dict) -> list[dict]:
     ]
 
 
-def _obs_code(obs: dict) -> str | None:
-    for coding in obs.get("code", {}).get("coding", []):
+def _obs_code(resource: dict) -> str | None:
+    for coding in resource.get("code", {}).get("coding", []):
         if coding.get("system") in (SNOMED, LOINC):
             return coding.get("code")
     return None
 
 
 def bundle_to_lean_json(bundle: dict) -> dict:
-    """Extract the fields the Lean evaluator expects from a FHIR bundle."""
     patient = next(
         (e["resource"] for e in bundle.get("entry", [])
          if e.get("resource", {}).get("resourceType") == "Patient"),
@@ -88,8 +92,22 @@ def bundle_to_lean_json(bundle: dict) -> dict:
     return result
 
 
+def get_conversation(bundle: dict) -> list[dict] | None:
+    raw = next(
+        (e["valueString"] for e in bundle.get("extension", [])
+         if "healthbench-conversation" in e.get("url", "")),
+        None,
+    )
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw)
+    except Exception:
+        return None
+
+
 def strip_ga_from_bundle(bundle: dict) -> dict:
-    bundle = json.loads(json.dumps(bundle))  # deep copy
+    bundle = json.loads(json.dumps(bundle))
     bundle["entry"] = [
         e for e in bundle.get("entry", [])
         if _obs_code(e.get("resource", {})) != GA_LOINC
@@ -98,7 +116,7 @@ def strip_ga_from_bundle(bundle: dict) -> dict:
 
 
 def strip_signs_from_bundle(bundle: dict) -> dict:
-    bundle = json.loads(json.dumps(bundle))  # deep copy
+    bundle = json.loads(json.dumps(bundle))
     bundle["entry"] = [
         e for e in bundle.get("entry", [])
         if _obs_code(e.get("resource", {})) not in DANGER_SIGN_CODES
@@ -109,20 +127,13 @@ def strip_signs_from_bundle(bundle: dict) -> dict:
 # ── Engine runners ─────────────────────────────────────────────────────────────
 
 def run_google_cql(bundle_path: str) -> dict:
-    """Run Google CQL CLI against a single FHIR bundle file.
-
-    The CLI takes directory inputs and writes output JSON files, so we create
-    temporary directories, symlink/copy the inputs, then read the result file.
-    Output structure: {evalResults: [{expressionDefinitions: {NAME: {value: ...}}}]}
-    """
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         cql_dir = tmp / "cql"
         bundle_dir = tmp / "bundles"
         out_dir = tmp / "output"
-        cql_dir.mkdir()
-        bundle_dir.mkdir()
-        out_dir.mkdir()
+        for d in (cql_dir, bundle_dir, out_dir):
+            d.mkdir()
 
         shutil.copy(CQL_FILE, cql_dir / CQL_FILE.name)
         shutil.copy(bundle_path, bundle_dir / "patient.json")
@@ -141,15 +152,15 @@ def run_google_cql(bundle_path: str) -> dict:
 
         result_files = list(out_dir.glob("*.json"))
         if not result_files:
-            return {"error": f"No output file produced.\nstdout: {proc.stdout[:300]}"}
+            return {"error": f"No output produced.\n{proc.stdout[:300]}"}
 
         try:
             raw = json.loads(result_files[0].read_text())
             defs = raw.get("evalResults", [{}])[0].get("expressionDefinitions", {})
             def _val(name: str):
                 return defs.get(name, {}).get("value")
-            has_danger = _val("Has Danger Sign")
             urgent = _val("Recommend Urgent Referral")
+            has_danger = _val("Has Danger Sign")
             return {
                 "disposition": "urgent_referral" if urgent is True else (
                     "routine_follow_up" if urgent is False else "unknown"
@@ -158,12 +169,12 @@ def run_google_cql(bundle_path: str) -> dict:
                 "engine": "google-cql",
             }
         except Exception as exc:
-            return {"error": f"parse error: {exc}\nraw: {result_files[0].read_text()[:300]}"}
+            return {"error": f"parse error: {exc}"}
 
 
 def run_lean(lean_json_path: str) -> dict:
     if not LEAN_BIN.exists():
-        return {"error": "Lean binary not found — compile first using the button above."}
+        return {"error": "Lean binary not found — compile first."}
     proc = subprocess.run(
         [str(LEAN_BIN), lean_json_path],
         capture_output=True, text=True, timeout=30,
@@ -203,18 +214,91 @@ def build_lean() -> Generator[str, None, None]:
         yield output
     proc.wait()
     if proc.returncode == 0:
-        yield output + "\n✓ Build complete. Lean proofs verified — binary ready at `.lake/build/bin/anc-eval`."
+        yield output + "\n✓ Build complete. Proofs verified — binary ready."
     else:
         yield output + f"\n✗ Build failed (exit {proc.returncode})."
 
 
+# ── Markdown helpers ───────────────────────────────────────────────────────────
+
+def _conversation_md(turns: list[dict]) -> str:
+    lines = []
+    for t in turns:
+        role = t.get("role", "")
+        content = t.get("content", "").strip()
+        if role == "user":
+            lines.append(f"**Patient/Clinician:** {content}")
+        else:
+            lines.append(f"**Assistant:** {content}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def _extraction_md(lean_json: dict) -> str:
+    ga = lean_json.get("gestational_age_weeks")
+    ga_str = f"{ga} weeks" if ga is not None else "not recorded"
+
+    rows = ""
+    for field, label in DANGER_SIGN_LABELS.items():
+        val = lean_json.get(field, "unknown")
+        if val == "true":
+            icon, note = "🔴", "**present** → Observation recorded as `true`"
+        elif val == "false":
+            icon, note = "✓", "absent → Observation recorded as `false`"
+        else:
+            icon, note = "❓", "not assessed → no Observation in bundle"
+        rows += f"| {icon} | **{label}** | {note} |\n"
+
+    return f"""
+**Gestational age:** {ga_str}
+
+| | Sign | Extracted to FHIR |
+|---|---|---|
+{rows}
+"""
+
+
+def _results_md(cql_out: dict, lean_out: dict) -> str:
+    match = (
+        cql_out.get("disposition") == lean_out.get("disposition")
+        and "error" not in cql_out
+        and "error" not in lean_out
+    )
+    cql_disp = cql_out.get("disposition", cql_out.get("error", "—"))
+    lean_disp = lean_out.get("disposition", lean_out.get("error", "—"))
+    agree = "**✓ match**" if match else "**✗ mismatch**"
+
+    return f"""
+| Engine | Disposition | Danger sign |
+|--------|-------------|-------------|
+| **Google CQL** | `{cql_disp}` | `{cql_out.get("has_danger_sign", "—")}` |
+| **Lean evaluator** | `{lean_disp}` | `{lean_out.get("has_danger_sign", "—")}` |
+| Agreement | {agree} | |
+"""
+
+
+def _proofs_md(proofs: dict) -> str:
+    if not proofs:
+        return "_Compile Lean first to see proof status._"
+    return f"""
+| Theorem | Meaning | Status |
+|---------|---------|--------|
+| `danger_sign_implies_referral` | Danger sign always → urgent referral | `{proofs.get("danger_sign_implies_referral", "—")}` |
+| `no_contradictory_recommendations` | Cannot receive both routine and urgent | `{proofs.get("no_contradictory_recommendations", "—")}` |
+| `unknown_not_false` | Missing data ≠ "no danger sign" | `{proofs.get("unknown_not_false", "—")}` |
+"""
+
+
 # ── Evaluate ───────────────────────────────────────────────────────────────────
 
-def evaluate(scenario_label: str, strip_ga: bool, strip_signs: bool) -> tuple[str, str, str]:
+def evaluate(
+    scenario_label: str, strip_ga: bool, strip_signs: bool
+) -> tuple[str, str, str, str, str]:
     if not scenario_label or scenario_label not in SCENARIOS:
-        return "", "", ""
+        return "", "", "", "", ""
 
     bundle = json.loads(Path(SCENARIOS[scenario_label]).read_text())
+    conversation = get_conversation(bundle)
 
     if strip_ga:
         bundle = strip_ga_from_bundle(bundle)
@@ -235,66 +319,20 @@ def evaluate(scenario_label: str, strip_ga: bool, strip_signs: bool) -> tuple[st
     lean_out = run_lean(str(lean_tmp))
     proofs = lean_proof_status()
 
-    match = (
-        cql_out.get("disposition") == lean_out.get("disposition")
-        and "error" not in cql_out
-        and "error" not in lean_out
-    )
+    conv_md = _conversation_md(conversation) if conversation else ""
+    extraction_md = _extraction_md(lean_json)
+    results_md = _results_md(cql_out, lean_out)
+    proofs_md = _proofs_md(proofs)
 
-    # Patient card: show FHIR observations as a readable table
-    obs_rows = ""
-    ga_val = lean_json.get("gestational_age_weeks")
-    ga_str = f"{ga_val} weeks" if ga_val is not None else "unknown"
-    for code, field in DANGER_SIGN_CODES.items():
-        val = lean_json.get(field, "unknown")
-        icon = "✓" if val == "true" else ("✗" if val == "false" else "?")
-        obs_rows += f"| {field.replace('_', ' ').title()} | `{val}` | {icon} |\n"
-
-    patient_md = f"""
-**Gestational age:** {ga_str}
-
-| Observation | Value | |
-|---|---|---|
-{obs_rows}
-"""
-
-    cql_disp = cql_out.get("disposition", cql_out.get("error", "—"))
-    lean_disp = lean_out.get("disposition", lean_out.get("error", "—"))
-
-    results_md = f"""
-| Engine | Disposition | Danger sign |
-|--------|-------------|-------------|
-| **Google CQL** (runs `DangerSigns.cql` on FHIR bundle) | `{cql_disp}` | `{cql_out.get("has_danger_sign", "—")}` |
-| **Lean evaluator** (compiled from Lean 4 source) | `{lean_disp}` | `{lean_out.get("has_danger_sign", "—")}` |
-| **Agreement** | **{"✓ match" if match else "✗ mismatch"}** | |
-
-*Both engines run the same WHO rule independently. The CQL engine executes the CQL source \
-directly against the FHIR bundle. The Lean evaluator uses the binary compiled by `lake build`.*
-"""
-
-    if proofs:
-        proofs_md = f"""
-These theorems were verified by the Lean compiler when the binary was built. \
-They hold for **every possible patient**, not just the scenarios above.
-
-| Theorem | Meaning | Status |
-|---------|---------|--------|
-| `danger_sign_implies_referral` | Any patient with a danger sign always receives urgent referral | `{proofs.get("danger_sign_implies_referral", "—")}` |
-| `no_contradictory_recommendations` | No patient can receive both routine follow-up and urgent referral | `{proofs.get("no_contradictory_recommendations", "—")}` |
-| `unknown_not_false` | Missing data stays unknown — never silently treated as "no danger sign" | `{proofs.get("unknown_not_false", "—")}` |
-"""
-    else:
-        proofs_md = "_Compile Lean first to see proof status._"
-
-    return patient_md, results_md, proofs_md
+    return conv_md, extraction_md, results_md, proofs_md, json.dumps(lean_json, indent=2)
 
 
-# ── UI ─────────────────────────────────────────────────────────────────────────
+# ── Static source content ──────────────────────────────────────────────────────
 
 CQL_SOURCE = CQL_FILE.read_text() if CQL_FILE.exists() else "(CQL file not found)"
 
 LEAN_SOURCE = """\
--- Three-valued logic (true / false / unknown) matching CQL nullology
+-- Three-valued logic: true / false / unknown
 def hasDangerSignTrilean (p : PatientState) : Trilean :=
   (p.vaginalBleeding.or p.severeHeadache).or p.reducedFetalMovement
 
@@ -304,27 +342,32 @@ def disposition (p : PatientState) : Recommendation :=
   | .false   => .routineFollowUp
   | .unknown => .unknown  -- missing data ≠ safe
 
--- Theorems proved at compile time:
-theorem danger_sign_implies_referral (p : PatientState) (h : HasDangerSign p) :
-    disposition p = .urgentReferral
+-- Proved at compile time for ALL possible patients:
+theorem danger_sign_implies_referral (p : PatientState)
+    (h : HasDangerSign p) : disposition p = .urgentReferral
 
 theorem no_contradictory_recommendations (p : PatientState) :
-    ¬ (recommendsRoutineFollowUp p = .true ∧ recommendsReferral p = .true)
+    ¬ (recommendsRoutineFollowUp p = .true
+       ∧ recommendsReferral p = .true)
 
-theorem unknown_not_false (t : Trilean) (h : t = .unknown) : t ≠ .false"""
+theorem unknown_not_false (t : Trilean)
+    (h : t = .unknown) : t ≠ .false"""
 
+
+# ── UI ─────────────────────────────────────────────────────────────────────────
 
 def build_ui() -> gr.Blocks:
     choices = list(SCENARIOS.keys()) or ["(no fixtures found)"]
-    with gr.Blocks(title="WHO ANC: CQL + Lean Formal Verification") as demo:
+
+    with gr.Blocks(title="WHO ANC: CQL + Lean") as demo:
 
         gr.Markdown("# WHO ANC Danger Signs: CQL + Lean Formal Verification")
         gr.Markdown(
-            "A WHO SMART ANC clinical decision rule — evaluated by **Google CQL** against "
-            "real FHIR patient data, and independently verified by **Lean 4** formal proofs."
+            "Select a patient scenario to trace the full pipeline: "
+            "**clinical conversation → FHIR extraction → Google CQL evaluation → Lean formal proof.**"
         )
 
-        # ── Row 1: patient selector ──
+        # ── Patient selector ──
         with gr.Row():
             scenario = gr.Dropdown(
                 choices=choices, value=choices[0],
@@ -334,46 +377,63 @@ def build_ui() -> gr.Blocks:
             strip_signs = gr.Checkbox(label="Mark danger signs as not assessed", value=False)
         evaluate_btn = gr.Button("Evaluate", variant="primary")
 
-        # ── Row 2: CQL | Lean side-by-side ──
+        # ── Conversation (visible only for HealthBench fixtures) ──
+        with gr.Accordion("Clinical conversation (HealthBench source)", open=True):
+            conv_out = gr.Markdown(
+                value="_Select a HealthBench scenario and click Evaluate to see the source conversation._"
+            )
+
+        # ── Extraction ──
+        with gr.Accordion("Step 1 — Extracted to FHIR", open=True):
+            gr.Markdown(
+                "Danger signs and gestational age identified from the conversation "
+                "and encoded as FHIR R4 Observations (SNOMED-CT codes)."
+            )
+            extraction_out = gr.Markdown()
+
+        # ── CQL | Lean side-by-side ──
+        with gr.Accordion("Step 2 — The clinical rule (CQL + Lean)", open=False):
+            with gr.Row():
+                with gr.Column():
+                    gr.Markdown("### CQL rule (`DangerSigns.cql`)")
+                    gr.Markdown(
+                        "Executed by **Google CQL** directly against the FHIR bundle above. "
+                        "This is the authoritative HL7 representation of the WHO danger-sign rule."
+                    )
+                    gr.Code(value=CQL_SOURCE, language="sql", label="DangerSigns.cql")
+                with gr.Column():
+                    gr.Markdown("### Lean 4 model (`lean/`)")
+                    gr.Markdown(
+                        "The same rule in [Lean 4](https://lean-lang.org/). "
+                        "Click **Compile** to watch the Lean compiler verify the safety theorems "
+                        "and produce the evaluator binary."
+                    )
+                    gr.Code(value=LEAN_SOURCE, language="python", label="LeanCqlAnc (excerpt)")
+                    compile_btn = gr.Button("Compile & Verify Lean Proofs", variant="secondary")
+                    build_log = gr.Textbox(
+                        label="Compiler output", lines=8, max_lines=20,
+                        placeholder="Click above to compile…", interactive=False,
+                    )
+                    compile_btn.click(build_lean, outputs=build_log)
+
+        # ── Results ──
+        gr.Markdown("## Step 3 — Evaluation results")
         with gr.Row():
-            with gr.Column():
-                gr.Markdown("### CQL rule (`DangerSigns.cql`)")
-                gr.Markdown(
-                    "The computable form of the WHO danger-sign recommendation, written in "
-                    "[HL7 Clinical Quality Language](https://cql.hl7.org/). "
-                    "The Google CQL engine executes this directly against the FHIR patient bundle."
-                )
-                gr.Code(value=CQL_SOURCE, language="sql", label="DangerSigns.cql")
-
-            with gr.Column():
-                gr.Markdown("### Lean 4 model (`lean/`)")
-                gr.Markdown(
-                    "The same rule encoded as a mathematical function in "
-                    "[Lean 4](https://lean-lang.org/). "
-                    "Click **Compile & Verify** to watch the Lean compiler check the theorems "
-                    "and produce the evaluator binary."
-                )
-                gr.Code(value=LEAN_SOURCE, language="python", label="LeanCqlAnc (excerpt)")
-
-                compile_btn = gr.Button("Compile & Verify Lean Proofs", variant="secondary")
-                build_log = gr.Textbox(
-                    label="Compiler output", lines=10, max_lines=20,
-                    placeholder="Click above to compile…", interactive=False,
-                )
-                compile_btn.click(build_lean, outputs=build_log)
-
-        # ── Row 3: results ──
-        gr.Markdown("---")
-        with gr.Row():
-            patient_out = gr.Markdown(label="Patient")
+            with gr.Column(scale=1):
+                gr.Markdown("### FHIR bundle (sent to both engines)")
+                fhir_out = gr.Code(language="json", label="Patient JSON")
             with gr.Column(scale=2):
+                gr.Markdown("### Engine agreement")
                 results_out = gr.Markdown()
-                proofs_out = gr.Markdown()
+                gr.Markdown("### Lean proofs")
+                proofs_out = gr.Markdown(
+                    value="_Compile Lean first to see proof status._"
+                )
 
         evaluate_btn.click(
             evaluate,
             inputs=[scenario, strip_ga, strip_signs],
-            outputs=[patient_out, results_out, proofs_out],
+            outputs=[conv_out, extraction_out, results_out, proofs_out, fhir_out],
         )
 
     return demo
