@@ -1,18 +1,18 @@
 {
   "resourceType": "Bundle",
-  "id": "reduced-fetal-movement",
+  "id": "fever-danger-sign",
   "type": "collection",
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "36 weeks GA, reduced fetal movement — danger sign"
+      "valueString": "36 weeks GA, high fever — WHO ANC danger sign (ANCDT01 ANC.B5.DE6)"
     }
   ],
   "entry": [
     {
       "resource": {
         "resourceType": "Patient",
-        "id": "patient-reduced-fetal-movement",
+        "id": "patient-fever-danger-sign",
         "gender": "female",
         "birthDate": "1999-03-20"
       }
@@ -20,12 +20,12 @@
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "ga-rfm",
+        "id": "ga-fever",
         "status": "final",
         "code": {
           "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
         },
-        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "subject": {"reference": "Patient/patient-fever-danger-sign"},
         "effectiveDateTime": "2024-07-01",
         "valueQuantity": {"value": 36, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
       }
@@ -36,9 +36,9 @@
         "id": "vaginal-bleeding-neg",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "289530006", "display": "Vaginal bleeding"}]
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
         },
-        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "subject": {"reference": "Patient/patient-fever-danger-sign"},
         "effectiveDateTime": "2024-07-01",
         "valueBoolean": false
       }
@@ -49,9 +49,9 @@
         "id": "severe-headache-neg",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "25064002", "display": "Severe headache"}]
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
         },
-        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "subject": {"reference": "Patient/patient-fever-danger-sign"},
         "effectiveDateTime": "2024-07-01",
         "valueBoolean": false
       }
@@ -59,12 +59,12 @@
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "reduced-fetal-movement-pos",
+        "id": "fever-pos",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "386281004", "display": "Reduced fetal movement"}]
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE6", "display": "Fever"}]
         },
-        "subject": {"reference": "Patient/patient-reduced-fetal-movement"},
+        "subject": {"reference": "Patient/patient-fever-danger-sign"},
         "effectiveDateTime": "2024-07-01",
         "valueBoolean": true
       }

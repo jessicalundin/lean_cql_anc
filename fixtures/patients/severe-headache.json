@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "32 weeks GA, severe headache — danger sign, urgent referral"
+      "valueString": "32 weeks GA, severe headache — WHO ANC danger sign (ANCDT01 ANC.B5.DE7)"
     }
   ],
   "entry": [
@@ -33,10 +33,10 @@
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "vaginal-bleeding-neg",
+        "id": "bleeding-vaginally-neg",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "289530006", "display": "Vaginal bleeding"}]
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
         },
         "subject": {"reference": "Patient/patient-severe-headache"},
         "effectiveDateTime": "2024-07-01",
@@ -49,24 +49,11 @@
         "id": "severe-headache-pos",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "25064002", "display": "Severe headache"}]
+          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
         },
         "subject": {"reference": "Patient/patient-severe-headache"},
         "effectiveDateTime": "2024-07-01",
         "valueBoolean": true
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "reduced-fetal-movement-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://snomed.info/sct", "code": "386281004", "display": "Reduced fetal movement"}]
-        },
-        "subject": {"reference": "Patient/patient-severe-headache"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
       }
     }
   ]
