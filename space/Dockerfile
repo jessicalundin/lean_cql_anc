@@ -1,12 +1,12 @@
 # Stage 1: build Google CQL binary
 FROM golang:1.22 AS go-builder
-RUN go install github.com/google/cql/cmd/cql@latest
+RUN go install github.com/google/cql/cmd/cli@latest
 
 # Stage 2: main image
 FROM python:3.11-slim
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-COPY --from=go-builder /go/bin/cql /usr/local/bin/google-cql
+COPY --from=go-builder /go/bin/cli /usr/local/bin/google-cql
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \

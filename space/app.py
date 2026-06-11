@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Generator
 
@@ -107,29 +109,56 @@ def strip_signs_from_bundle(bundle: dict) -> dict:
 # ── Engine runners ─────────────────────────────────────────────────────────────
 
 def run_google_cql(bundle_path: str) -> dict:
-    proc = subprocess.run(
-        ["google-cql", "eval",
-         "--cql_queries_file", str(CQL_FILE),
-         "--fhir_bundle", bundle_path],
-        capture_output=True, text=True, timeout=60,
-    )
-    if proc.returncode != 0:
-        return {"error": proc.stderr or proc.stdout}
-    try:
-        raw = json.loads(proc.stdout)
-        # Google CQL returns a list of per-patient result maps
-        results = raw[0] if isinstance(raw, list) else raw
-        has_danger = results.get("Has Danger Sign")
-        urgent = results.get("Recommend Urgent Referral")
-        return {
-            "disposition": "urgent_referral" if urgent else (
-                "routine_follow_up" if urgent is False else "unknown"
-            ),
-            "has_danger_sign": str(has_danger).lower() if has_danger is not None else "unknown",
-            "engine": "google-cql",
-        }
-    except Exception as exc:
-        return {"error": f"parse error: {exc}\nraw: {proc.stdout[:300]}"}
+    """Run Google CQL CLI against a single FHIR bundle file.
+
+    The CLI takes directory inputs and writes output JSON files, so we create
+    temporary directories, symlink/copy the inputs, then read the result file.
+    Output structure: {evalResults: [{expressionDefinitions: {NAME: {value: ...}}}]}
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        cql_dir = tmp / "cql"
+        bundle_dir = tmp / "bundles"
+        out_dir = tmp / "output"
+        cql_dir.mkdir()
+        bundle_dir.mkdir()
+        out_dir.mkdir()
+
+        shutil.copy(CQL_FILE, cql_dir / CQL_FILE.name)
+        shutil.copy(bundle_path, bundle_dir / "patient.json")
+
+        proc = subprocess.run(
+            [
+                "google-cql",
+                f"--cql_dir={cql_dir}",
+                f"--fhir_bundle_dir={bundle_dir}",
+                f"--json_output_dir={out_dir}",
+            ],
+            capture_output=True, text=True, timeout=60,
+        )
+        if proc.returncode != 0:
+            return {"error": proc.stderr or proc.stdout}
+
+        result_files = list(out_dir.glob("*.json"))
+        if not result_files:
+            return {"error": f"No output file produced.\nstdout: {proc.stdout[:300]}"}
+
+        try:
+            raw = json.loads(result_files[0].read_text())
+            defs = raw.get("evalResults", [{}])[0].get("expressionDefinitions", {})
+            def _val(name: str):
+                return defs.get(name, {}).get("value")
+            has_danger = _val("Has Danger Sign")
+            urgent = _val("Recommend Urgent Referral")
+            return {
+                "disposition": "urgent_referral" if urgent is True else (
+                    "routine_follow_up" if urgent is False else "unknown"
+                ),
+                "has_danger_sign": str(has_danger).lower() if has_danger is not None else "unknown",
+                "engine": "google-cql",
+            }
+        except Exception as exc:
+            return {"error": f"parse error: {exc}\nraw: {result_files[0].read_text()[:300]}"}
 
 
 def run_lean(lean_json_path: str) -> dict:
