@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "Term gestation (GA unspecified), recurrent late decelerations on CTG over 20 min, light vaginal bleeding, mother hemodynamically stable — fetal compromise concern; ANC.B5.DE3 (bleeding) positive + non-reassuring fetal monitoring (possible C-section indication)"
+      "valueString": "Term gestation (GA unspecified), recurrent late decelerations on CTG over 20 min, light vaginal bleeding, mother hemodynamically stable \u2014 fetal compromise concern; ANC.B5.DE3 (bleeding) positive + non-reassuring fetal monitoring (possible C-section indication)"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
@@ -30,56 +30,54 @@
     },
     {
       "resource": {
-        "resourceType": "Observation",
-        "id": "bleeding-vaginally-pos",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+        "resourceType": "Encounter",
+        "id": "enc-patient-hb-late-decelerations",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
         },
-        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "light vaginal bleeding; etiology unclear, possible abruption"}]
+        "subject": {
+          "reference": "Patient/patient-hb-late-decelerations"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "severe-headache-neg",
+        "id": "ds-anc-b5-de50-patient-hb-late-decelerations",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-pain-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        "subject": {
+          "reference": "Patient/patient-hb-late-decelerations"
         },
-        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "reduced-fetal-movement-pos",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE48", "display": "Reduced or no fetal movements"}]
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-late-decelerations"
         },
-        "subject": {"reference": "Patient/patient-hb-late-decelerations"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "recurrent late decelerations on CTG over past 20 minutes — non-reassuring fetal status"}]
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE50",
+              "display": "Bleeding vaginally"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "I noticed some light vaginal bleeding not sure if it's connected"
+          }
+        ]
       }
     }
   ]

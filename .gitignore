@@ -7,3 +7,4 @@ lean/lake-packages/
 space/artifacts/
 artifacts/
 node_modules/
+vendor/

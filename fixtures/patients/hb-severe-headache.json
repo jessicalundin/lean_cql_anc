@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "26yo pregnant, gestational age unknown, frequent intense headaches past few weeks, mild anemia, no known complications — ANC.B5.DE7 (severe headache) positive; no bleeding, no visual disturbance (preeclampsia danger sign isolated)"
+      "valueString": "26yo pregnant, gestational age unknown, frequent intense headaches past few weeks, mild anemia, no known complications \u2014 ANC.B5.DE7 (severe headache) positive; no bleeding, no visual disturbance (preeclampsia danger sign isolated)"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
@@ -25,61 +25,59 @@
       "resource": {
         "resourceType": "Patient",
         "id": "patient-hb-severe-headache",
-        "gender": "female",
-        "birthDate": "1998-01-01"
+        "gender": "female"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-patient-hb-severe-headache",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "subject": {
+          "reference": "Patient/patient-hb-severe-headache"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "bleeding-vaginally-neg",
+        "id": "ds-anc-b5-de57-patient-hb-severe-headache",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-severe-headache"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-headache-pos",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+        "subject": {
+          "reference": "Patient/patient-hb-severe-headache"
         },
-        "subject": {"reference": "Patient/patient-hb-severe-headache"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "frequent headaches for past few weeks, now quite intense; seeking immediate relief"}]
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "visual-disturbance-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE8", "display": "Visual disturbance"}]
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-severe-headache"
         },
-        "subject": {"reference": "Patient/patient-hb-severe-headache"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-pain-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE57",
+              "display": "Severe headache"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-severe-headache"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "note": [
+          {
+            "text": "frequent headaches for the past few weeks, which have gotten quite intense"
+          }
+        ]
       }
     }
   ]

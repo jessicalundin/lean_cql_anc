@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "28 weeks GA, strong contractions + severe pain, can barely breathe — preterm labour, WHO ANC danger signs (ANC.B5.DE10 + ANC.B5.DE13)"
+      "valueString": "28 weeks GA, strong contractions + severe pain, can barely breathe \u2014 preterm labour, WHO ANC danger signs (ANC.B5.DE10 + ANC.B5.DE13)"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
@@ -30,69 +30,120 @@
     },
     {
       "resource": {
-        "resourceType": "Observation",
-        "id": "ga-hb-preterm-labor",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        "resourceType": "Encounter",
+        "id": "enc-patient-hb-preterm-labor",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
         },
-        "subject": {"reference": "Patient/patient-hb-preterm-labor"},
-        "effectiveDateTime": "2024-07-01",
-        "valueQuantity": {"value": 28, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+        "subject": {
+          "reference": "Patient/patient-hb-preterm-labor"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "bleeding-vaginally-neg",
+        "id": "ga-patient-hb-preterm-labor",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "49051-6",
+              "display": "Gestational age in weeks"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-preterm-labor"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "subject": {
+          "reference": "Patient/patient-hb-preterm-labor"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-preterm-labor"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueQuantity": {
+          "value": 28,
+          "unit": "wk",
+          "system": "http://unitsofmeasure.org",
+          "code": "wk"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "severe-headache-neg",
+        "id": "ds-anc-b5-de55-patient-hb-preterm-labor",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-preterm-labor"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "subject": {
+          "reference": "Patient/patient-hb-preterm-labor"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-preterm-labor"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE55",
+              "display": "Labour"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "started having strong contractions"
+          }
+        ]
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "labour-pos",
+        "id": "ds-anc-b5-de58-patient-hb-preterm-labor",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE10", "display": "Labour"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-preterm-labor"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "suddenly my sister is 7 months pregnant and started having strong contractions"}]
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-pain-pos",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        "subject": {
+          "reference": "Patient/patient-hb-preterm-labor"
         },
-        "subject": {"reference": "Patient/patient-hb-preterm-labor"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "she's in severe pain"}]
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-preterm-labor"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE58",
+              "display": "Severe pain"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "she's in severe pain"
+          }
+        ]
       }
     }
   ]

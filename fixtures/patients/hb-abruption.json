@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "32 weeks GA, severe vaginal bleeding + intense abdominal pain — suspected placental abruption, WHO ANC danger signs (ANC.B5.DE3 + ANC.B5.DE13 + ANC.B5.DE14)"
+      "valueString": "32 weeks GA, severe vaginal bleeding + intense abdominal pain \u2014 suspected placental abruption, WHO ANC danger signs (ANC.B5.DE3 + ANC.B5.DE13 + ANC.B5.DE14)"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
@@ -30,70 +30,120 @@
     },
     {
       "resource": {
-        "resourceType": "Observation",
-        "id": "ga-hb-abruption",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        "resourceType": "Encounter",
+        "id": "enc-patient-hb-abruption",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
         },
-        "subject": {"reference": "Patient/patient-hb-abruption"},
-        "effectiveDateTime": "2024-07-01",
-        "valueQuantity": {"value": 32, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+        "subject": {
+          "reference": "Patient/patient-hb-abruption"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "bleeding-vaginally-pos",
+        "id": "ga-patient-hb-abruption",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "49051-6",
+              "display": "Gestational age in weeks"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-abruption"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "severe vaginal bleeding"}]
+        "subject": {
+          "reference": "Patient/patient-hb-abruption"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-abruption"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueQuantity": {
+          "value": 32,
+          "unit": "wk",
+          "system": "http://unitsofmeasure.org",
+          "code": "wk"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "severe-headache-neg",
+        "id": "ds-anc-b5-de50-patient-hb-abruption",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-abruption"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "subject": {
+          "reference": "Patient/patient-hb-abruption"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-abruption"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE50",
+              "display": "Bleeding vaginally"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "severe vaginal bleeding"
+          }
+        ]
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "severe-pain-pos",
+        "id": "ds-anc-b5-de60-patient-hb-abruption",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-abruption"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "intense abdominal pain"}]
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-abdominal-pain-pos",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE14", "display": "Severe abdominal pain"}]
+        "subject": {
+          "reference": "Patient/patient-hb-abruption"
         },
-        "subject": {"reference": "Patient/patient-hb-abruption"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": true,
-        "note": [{"text": "intense abdominal pain"}]
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-abruption"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE60",
+              "display": "Severe abdominal pain"
+            }
+          ]
+        },
+        "note": [
+          {
+            "text": "intense abdominal pain"
+          }
+        ]
       }
     }
   ]

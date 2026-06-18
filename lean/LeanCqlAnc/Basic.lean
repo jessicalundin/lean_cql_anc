@@ -31,12 +31,13 @@ def Trilean.toBool? : Trilean → Option Bool
   | .false => some false
   | .unknown => none
 
+-- Mirrors the WHO ANCDT01 model: one ANC.B5.DE48 observation whose value is
+-- either a danger sign code (DE50–DE62) or "No danger signs" (DE49).
+-- true = at least one danger sign present; false = no danger signs; unknown = not assessed.
 structure PatientState where
   id : String
   gestationalAgeWeeks : Option Nat
-  vaginalBleeding : Trilean
-  severeHeadache : Trilean
-  reducedFetalMovement : Trilean
+  dangerSignStatus : Trilean
   deriving Repr, Inhabited
 
 inductive Recommendation where

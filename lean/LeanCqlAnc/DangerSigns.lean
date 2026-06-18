@@ -2,28 +2,26 @@ import LeanCqlAnc.Basic
 
 namespace LeanCqlAnc
 
-/-- Any documented ANC danger sign in the prototype slice. -/
+-- Mirrors ANCDT01 "Should Proceed with ANC contact OR Referral":
+-- the ANC.B5.DE48 observation value is in the Danger signs Choices valueset (DE50–DE62).
 def HasDangerSign (p : PatientState) : Prop :=
-  p.vaginalBleeding = .true ∨
-  p.severeHeadache = .true ∨
-  p.reducedFetalMovement = .true
+  p.dangerSignStatus = .true
 
 def hasDangerSignTrilean (p : PatientState) : Trilean :=
-  (p.vaginalBleeding.or p.severeHeadache).or p.reducedFetalMovement
+  p.dangerSignStatus
 
+-- "Should Proceed with ANC contact OR Referral" → urgentReferral
 def recommendsReferral (p : PatientState) : Trilean :=
   hasDangerSignTrilean p
 
+-- "Should Proceed with ANC contact" → routineFollowUp (danger sign is false/DE49)
 def recommendsRoutineFollowUp (p : PatientState) : Trilean :=
-  match hasDangerSignTrilean p with
-  | .false => .true
-  | .true => .false
-  | .unknown => .unknown
+  Trilean.not (hasDangerSignTrilean p)
 
 def disposition (p : PatientState) : Recommendation :=
   match hasDangerSignTrilean p with
-  | .true => .urgentReferral
-  | .false => .routineFollowUp
+  | .true    => .urgentReferral
+  | .false   => .routineFollowUp
   | .unknown => .unknown
 
 end LeanCqlAnc

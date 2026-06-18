@@ -17,36 +17,36 @@ import gradio as gr
 
 ROOT = Path(__file__).parent
 FIXTURES = ROOT / "fixtures" / "patients"
-CQL_FILE = ROOT / "cql" / "DangerSigns.cql"
+VENDOR_CQL_DIR = ROOT / "vendor" / "smart-anc" / "input" / "cql"
 LEAN_DIR = ROOT / "lean"
 LEAN_BIN = LEAN_DIR / ".lake" / "build" / "bin" / "anc-eval"
 
-ANC_SYSTEM = "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes"
+# WHO SMART ANC code system (master branch)
+ANC_SYSTEM = "http://smart.who.int/anc/CodeSystem/anc-custom-codes"
 LOINC = "http://loinc.org"
 
-# All 12 ANCDT01 danger signs (ANC.B5 Quick Check)
-DANGER_SIGNS = [
-    {"code": "ANC.B5.DE3",  "display": "Bleeding vaginally"},
-    {"code": "ANC.B5.DE4",  "display": "Central cyanosis"},
-    {"code": "ANC.B5.DE5",  "display": "Convulsing"},
-    {"code": "ANC.B5.DE6",  "display": "Fever"},
-    {"code": "ANC.B5.DE7",  "display": "Severe headache"},
-    {"code": "ANC.B5.DE8",  "display": "Visual disturbance"},
-    {"code": "ANC.B5.DE9",  "display": "Imminent delivery"},
-    {"code": "ANC.B5.DE10", "display": "Labour"},
-    {"code": "ANC.B5.DE11", "display": "Looks very ill"},
-    {"code": "ANC.B5.DE12", "display": "Severe vomiting"},
-    {"code": "ANC.B5.DE13", "display": "Severe pain"},
-    {"code": "ANC.B5.DE14", "display": "Severe abdominal pain"},
-]
-DANGER_SIGN_CODE_MAP = {s["code"]: s["display"] for s in DANGER_SIGNS}
+DANGER_SIGN_OBS_CODE = "ANC.B5.DE48"   # Observation.code: "Danger signs"
+NO_DANGER_SIGNS_CODE = "ANC.B5.DE49"   # Observation.value: "No danger signs"
 GA_LOINC = "49051-6"
 
-# Lean model checks these three signs (RFM is a Lean prototype extension, not in ANCDT01)
-LEAN_SIGN_CODES = {
-    "ANC.B5.DE3": "vaginal_bleeding",
-    "ANC.B5.DE7": "severe_headache",
-}
+# ANCDT01 danger sign value codes — valueset anc-b5-de50
+DANGER_SIGNS = [
+    {"code": "ANC.B5.DE50", "display": "Bleeding vaginally"},
+    {"code": "ANC.B5.DE51", "display": "Central cyanosis"},
+    {"code": "ANC.B5.DE52", "display": "Convulsing"},
+    {"code": "ANC.B5.DE53", "display": "Fever"},
+    {"code": "ANC.B5.DE54", "display": "Imminent delivery"},
+    {"code": "ANC.B5.DE55", "display": "Labour"},
+    {"code": "ANC.B5.DE56", "display": "Looks very ill"},
+    {"code": "ANC.B5.DE57", "display": "Severe headache"},
+    {"code": "ANC.B5.DE58", "display": "Severe pain"},
+    {"code": "ANC.B5.DE59", "display": "Severe vomiting"},
+    {"code": "ANC.B5.DE60", "display": "Severe abdominal pain"},
+    {"code": "ANC.B5.DE61", "display": "Unconscious"},
+    {"code": "ANC.B5.DE62", "display": "Visual disturbance"},
+]
+DANGER_SIGN_VALUE_CODES = {s["code"] for s in DANGER_SIGNS}
+DANGER_SIGN_DISPLAY = {s["code"]: s["display"] for s in DANGER_SIGNS}
 
 EXTRACTION_PROMPT = """You are a clinical coding assistant for antenatal care (ANC).
 
@@ -58,7 +58,7 @@ Danger sign value set (system: {system}):
 Rules:
 - Only include signs with clear textual evidence. Do NOT infer or assume.
 - "central cyanosis" = blue discoloration of lips/skin.
-- "severe pain" = ANC.B5.DE13; "severe abdominal pain" = ANC.B5.DE14 (distinct signs).
+- "severe pain" = ANC.B5.DE58; "severe abdominal pain" = ANC.B5.DE60 (distinct signs).
 - Include gestational_age_weeks if mentioned (integer or null).
 - Return ONLY valid JSON — no prose, no code fences.
 
@@ -83,7 +83,6 @@ def _load_scenarios() -> None:
     for path in sorted(FIXTURES.glob("*.json")):
         bundle = json.loads(path.read_text())
         exts = bundle.get("extension", [])
-        # Only include fixtures that have a HealthBench conversation
         if not any("healthbench-conversation" in e.get("url", "") for e in exts):
             continue
         summary = next(
@@ -94,6 +93,7 @@ def _load_scenarios() -> None:
 
 
 _load_scenarios()
+
 
 # ── FHIR helpers ──────────────────────────────────────────────────────────────
 
@@ -111,8 +111,15 @@ def _obs_code(resource: dict) -> str | None:
     return None
 
 
+def _encounter_id(bundle: dict) -> str | None:
+    for entry in bundle.get("entry", []):
+        r = entry.get("resource", {})
+        if r.get("resourceType") == "Encounter":
+            return r.get("id")
+    return None
+
+
 def get_conversation_meta(bundle: dict) -> dict | None:
-    """Return HealthBench metadata dict or None if no conversation extension."""
     exts = bundle.get("extension", [])
     raw = next(
         (e["valueString"] for e in exts if "healthbench-conversation" in e.get("url", "")),
@@ -146,7 +153,6 @@ def _conversation_text(turns: list[dict]) -> str:
 # ── LLM extraction ────────────────────────────────────────────────────────────
 
 def extract_danger_signs(conversation_text: str) -> dict:
-    """Call Claude to extract ANCDT01 danger signs. Returns extraction dict."""
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return {"error": "ANTHROPIC_API_KEY not set", "gestational_age_weeks": None, "danger_signs": []}
@@ -170,12 +176,24 @@ def extract_danger_signs(conversation_text: str) -> dict:
 
 
 def extraction_to_fhir_bundle(extraction: dict, patient_id: str | None = None) -> dict:
-    """Convert Claude extraction result to FHIR R4 Bundle."""
+    """Convert Claude extraction result to a FHIR R4 Bundle using the WHO ANCDT01 observation model."""
     pid = patient_id or f"patient-{uuid.uuid4().hex[:8]}"
+    enc_id = f"enc-{pid}"
     today = date.today().isoformat()
 
     entries: list[dict] = [
-        {"resource": {"resourceType": "Patient", "id": pid, "gender": "female"}}
+        {"resource": {"resourceType": "Patient", "id": pid, "gender": "female"}},
+        {"resource": {
+            "resourceType": "Encounter",
+            "id": enc_id,
+            "status": "finished",
+            "class": {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                "code": "AMB",
+                "display": "ambulatory",
+            },
+            "subject": {"reference": f"Patient/{pid}"},
+        }},
     ]
 
     ga = extraction.get("gestational_age_weeks")
@@ -186,32 +204,46 @@ def extraction_to_fhir_bundle(extraction: dict, patient_id: str | None = None) -
             "status": "final",
             "code": {"coding": [{"system": LOINC, "code": GA_LOINC, "display": "Gestational age in weeks"}]},
             "subject": {"reference": f"Patient/{pid}"},
+            "encounter": {"reference": f"Encounter/{enc_id}"},
             "effectiveDateTime": today,
             "valueQuantity": {"value": int(ga), "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"},
         }})
 
-    detected = {s["code"] for s in extraction.get("danger_signs", [])}
-    evidence_map = {s["code"]: s.get("evidence", "") for s in extraction.get("danger_signs", [])}
+    detected_signs = extraction.get("danger_signs", [])
 
-    for sign in DANGER_SIGNS:
-        present = sign["code"] in detected
-        obs: dict = {
+    if detected_signs:
+        for sign in detected_signs:
+            obs: dict = {
+                "resourceType": "Observation",
+                "id": f"ds-{sign['code'].lower().replace('.', '-')}-{pid}",
+                "status": "final",
+                "code": {"coding": [{"system": ANC_SYSTEM, "code": DANGER_SIGN_OBS_CODE, "display": "Danger signs"}]},
+                "subject": {"reference": f"Patient/{pid}"},
+                "encounter": {"reference": f"Encounter/{enc_id}"},
+                "effectiveDateTime": today,
+                "valueCodeableConcept": {"coding": [{"system": ANC_SYSTEM, "code": sign["code"], "display": sign["display"]}]},
+            }
+            evidence = sign.get("evidence", "")
+            if evidence:
+                obs["note"] = [{"text": evidence}]
+            entries.append({"resource": obs})
+    else:
+        entries.append({"resource": {
             "resourceType": "Observation",
-            "id": f"sign-{sign['code'].lower().replace('.', '-')}-{pid}",
+            "id": f"ds-none-{pid}",
             "status": "final",
-            "code": {"coding": [{"system": ANC_SYSTEM, "code": sign["code"], "display": sign["display"]}]},
+            "code": {"coding": [{"system": ANC_SYSTEM, "code": DANGER_SIGN_OBS_CODE, "display": "Danger signs"}]},
             "subject": {"reference": f"Patient/{pid}"},
+            "encounter": {"reference": f"Encounter/{enc_id}"},
             "effectiveDateTime": today,
-            "valueBoolean": present,
-        }
-        if present and evidence_map.get(sign["code"]):
-            obs["note"] = [{"text": evidence_map[sign["code"]]}]
-        entries.append({"resource": obs})
+            "valueCodeableConcept": {"coding": [{"system": ANC_SYSTEM, "code": NO_DANGER_SIGNS_CODE, "display": "No danger signs"}]},
+        }})
 
     return {"resourceType": "Bundle", "id": f"extracted-{pid}", "type": "collection", "entry": entries}
 
 
 def bundle_to_lean_json(bundle: dict) -> dict:
+    """Extract PatientState JSON for the Lean evaluator from a WHO-model FHIR bundle."""
     patient = next(
         (e["resource"] for e in bundle.get("entry", [])
          if e.get("resource", {}).get("resourceType") == "Patient"),
@@ -220,26 +252,37 @@ def bundle_to_lean_json(bundle: dict) -> dict:
     result: dict = {
         "id": patient.get("id", bundle.get("id", "unknown")),
         "gestational_age_weeks": None,
-        "vaginal_bleeding": "unknown",
-        "severe_headache": "unknown",
-        "reduced_fetal_movement": "unknown",
+        "danger_sign_status": "unknown",
     }
+
     for obs in _observations(bundle):
         if obs.get("status") not in ("final", "amended", "corrected"):
             continue
         code = _obs_code(obs)
         if code == GA_LOINC:
             result["gestational_age_weeks"] = obs.get("valueQuantity", {}).get("value")
-        elif code in LEAN_SIGN_CODES:
-            field = LEAN_SIGN_CODES[code]
-            val = obs.get("valueBoolean")
-            result[field] = "true" if val is True else ("false" if val is False else "unknown")
+        elif code == DANGER_SIGN_OBS_CODE:
+            for coding in obs.get("valueCodeableConcept", {}).get("coding", []):
+                vc = coding.get("code")
+                if vc in DANGER_SIGN_VALUE_CODES:
+                    result["danger_sign_status"] = "true"
+                    break
+                elif vc == NO_DANGER_SIGNS_CODE:
+                    if result["danger_sign_status"] != "true":
+                        result["danger_sign_status"] = "false"
+
     return result
 
 
 # ── Engine runners ────────────────────────────────────────────────────────────
 
 def run_google_cql(bundle_path: str) -> dict:
+    if not VENDOR_CQL_DIR.exists():
+        return {"error": "WHO CQL not found. Run scripts/setup-vendor.sh first."}
+
+    bundle = json.loads(Path(bundle_path).read_text())
+    enc_id = _encounter_id(bundle)
+
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         cql_dir = tmp / "cql"
@@ -248,18 +291,25 @@ def run_google_cql(bundle_path: str) -> dict:
         for d in (cql_dir, bundle_dir, out_dir):
             d.mkdir()
 
-        shutil.copy(CQL_FILE, cql_dir / CQL_FILE.name)
+        # Copy all WHO CQL source files (ANCDT01 and its dependencies)
+        for f in VENDOR_CQL_DIR.glob("*.cql"):
+            shutil.copy(f, cql_dir / f.name)
+        opts = VENDOR_CQL_DIR / "cql-options.json"
+        if opts.exists():
+            shutil.copy(opts, cql_dir / opts.name)
+
         shutil.copy(bundle_path, bundle_dir / "patient.json")
 
-        proc = subprocess.run(
-            [
-                "google-cql",
-                f"--cql_dir={cql_dir}",
-                f"--fhir_bundle_dir={bundle_dir}",
-                f"--json_output_dir={out_dir}",
-            ],
-            capture_output=True, text=True, timeout=60,
-        )
+        cmd = [
+            "google-cql",
+            f"--cql_dir={cql_dir}",
+            f"--fhir_bundle_dir={bundle_dir}",
+            f"--json_output_dir={out_dir}",
+        ]
+        if enc_id:
+            cmd.append(f"--cql_parameters_json={json.dumps({'encounter': enc_id})}")
+
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         if proc.returncode != 0:
             return {"error": proc.stderr or proc.stdout}
 
@@ -270,25 +320,32 @@ def run_google_cql(bundle_path: str) -> dict:
         try:
             raw = json.loads(result_files[0].read_text())
             defs = raw.get("evalResults", [{}])[0].get("expressionDefinitions", {})
+
             def _val(name: str):
                 return defs.get(name, {}).get("value")
 
-            urgent = _val("Recommend Urgent Referral")
-            active_signs = [
-                s["display"] for s in DANGER_SIGNS
-                if _val(f"Has {s['display']}") is True
-                or (s["code"] == "ANC.B5.DE5" and _val("Is Convulsing") is True)
-                or (s["code"] == "ANC.B5.DE9" and _val("Imminent Delivery Indicated") is True)
-                or (s["code"] == "ANC.B5.DE10" and _val("In Labour") is True)
-                or (s["code"] == "ANC.B5.DE11" and _val("Looks Very Ill") is True)
-            ]
+            urgent = _val("Should Proceed with ANC contact OR Referral")
+            routine = _val("Should Proceed with ANC contact")
+            disposition = (
+                "urgent_referral" if urgent is True
+                else "routine_follow_up" if routine is True
+                else "unknown"
+            )
+
+            danger_signs_raw = _val("Danger signs") or []
+            active_signs = []
+            if isinstance(danger_signs_raw, list):
+                for cc in danger_signs_raw:
+                    for coding in cc.get("coding", []):
+                        if coding.get("display"):
+                            active_signs.append(coding["display"])
+                            break
+
             return {
-                "disposition": "urgent_referral" if urgent is True else (
-                    "routine_follow_up" if urgent is False else "unknown"
-                ),
-                "has_danger_sign": str(_val("Has Danger Sign")).lower() if _val("Has Danger Sign") is not None else "unknown",
+                "disposition": disposition,
+                "has_danger_sign": "true" if urgent is True else ("false" if routine is True else "unknown"),
                 "active_signs": active_signs,
-                "engine": "google-cql",
+                "engine": "google-cql (ANCDT01)",
             }
         except Exception as exc:
             return {"error": f"parse error: {exc}"}
@@ -401,11 +458,15 @@ def _extraction_md(extraction: dict) -> str:
 
 def _fhir_extraction_note(extraction: dict) -> str:
     detected_count = len(extraction.get("danger_signs", []))
-    total = len(DANGER_SIGNS)
+    if detected_count > 0:
+        return (
+            f"_Claude extracted {detected_count} danger sign(s) from the conversation. "
+            f"Each sign became one FHIR R4 Observation coded with ANC.B5.DE48 "
+            f"(`Danger signs`) and a `valueCodeableConcept` from the WHO ANC code system._"
+        )
     return (
-        f"_Claude extracted {detected_count} of {total} danger signs from the conversation. "
-        f"Each sign became one FHIR R4 Observation coded with the WHO ANC custom code system "
-        f"(`anc-custom-codes`). Signs not mentioned are recorded as `valueBoolean: false`._"
+        "_No danger signs detected. A single 'No danger signs' (ANC.B5.DE49) observation "
+        "was recorded — the WHO model requires an explicit negative assertion._"
     )
 
 
@@ -456,7 +517,6 @@ def evaluate_fixture(
     bundle = json.loads(Path(SCENARIOS[scenario_label]).read_text())
     conv_meta = get_conversation_meta(bundle)
 
-    # Strip modifiers
     if strip_ga:
         bundle = {**bundle, "entry": [
             e for e in bundle.get("entry", [])
@@ -465,7 +525,7 @@ def evaluate_fixture(
     if strip_signs:
         bundle = {**bundle, "entry": [
             e for e in bundle.get("entry", [])
-            if _obs_code(e.get("resource", {})) not in DANGER_SIGN_CODE_MAP
+            if _obs_code(e.get("resource", {})) != DANGER_SIGN_OBS_CODE
         ]}
 
     tmp_dir = ROOT / "artifacts"
@@ -482,13 +542,20 @@ def evaluate_fixture(
     lean_out = run_lean(str(lean_tmp))
     proofs = lean_proof_status()
 
-    # Build an extraction-like dict from the FHIR bundle for display
+    # Build extraction-like display dict from the WHO observations in the bundle
     detected_signs = []
     for obs in _observations(bundle):
-        code = _obs_code(obs)
-        if code in DANGER_SIGN_CODE_MAP and obs.get("valueBoolean") is True:
-            note = next((n["text"] for n in obs.get("note", [])), "")
-            detected_signs.append({"code": code, "display": DANGER_SIGN_CODE_MAP[code], "evidence": note})
+        if _obs_code(obs) != DANGER_SIGN_OBS_CODE:
+            continue
+        for coding in obs.get("valueCodeableConcept", {}).get("coding", []):
+            vc = coding.get("code")
+            if vc in DANGER_SIGN_VALUE_CODES:
+                note = next((n["text"] for n in obs.get("note", [])), "")
+                detected_signs.append({
+                    "code": vc,
+                    "display": coding.get("display", DANGER_SIGN_DISPLAY.get(vc, vc)),
+                    "evidence": note,
+                })
     extraction_display = {
         "gestational_age_weeks": lean_json.get("gestational_age_weeks"),
         "danger_signs": detected_signs,
@@ -504,7 +571,6 @@ def evaluate_fixture(
 
 
 def evaluate_live(conversation_text: str) -> tuple[str, str, str, str, str]:
-    """Run full pipeline on free-text conversation via LLM extraction."""
     if not conversation_text.strip():
         return "", "", "", "", ""
 
@@ -538,12 +604,40 @@ def evaluate_live(conversation_text: str) -> tuple[str, str, str, str, str]:
 
 # ── Static source content ─────────────────────────────────────────────────────
 
-CQL_SOURCE = CQL_FILE.read_text() if CQL_FILE.exists() else "(CQL file not found)"
+ANCDT01_URL = "https://github.com/WorldHealthOrganization/smart-anc/blob/master/input/cql/ANCDT01.cql"
+
+CQL_SOURCE = f"""\
+-- Source: {ANCDT01_URL}
+library ANCDT01
+
+using FHIR version '4.0.1'
+
+include FHIRHelpers version '4.0.1'
+include ANCConfig called Config
+include ANCConcepts called Cx
+include ANCDataElements called PatientData
+include ANCContactDataElements called ContactData
+
+context Patient
+
+define "Danger signs":
+  ContactData."Danger signs"
+
+define "Should Proceed with ANC contact":
+  ContactData."Danger signs" in Cx."Danger Signs - No danger signs Choices"
+
+define "Should Proceed with ANC contact OR Referral for Central cyanosis":
+  ContactData."Danger signs" in Cx."Danger Signs - Central cyanosis Choices"
+
+define "Should Proceed with ANC contact OR Referral":
+  ContactData."Danger signs" in Cx."Danger signs Choices"
+"""
 
 LEAN_SOURCE = """\
--- Three-valued logic: true / false / unknown
+-- PatientState mirrors the WHO ANCDT01 single-observation model:
+-- dangerSignStatus: Trilean  (true=sign present / false=DE49 / unknown=not assessed)
 def hasDangerSignTrilean (p : PatientState) : Trilean :=
-  (p.vaginalBleeding.or p.severeHeadache).or p.reducedFetalMovement
+  p.dangerSignStatus
 
 def disposition (p : PatientState) : Recommendation :=
   match hasDangerSignTrilean p with
@@ -579,7 +673,6 @@ def build_ui() -> gr.Blocks:
 
         with gr.Tabs():
 
-            # ── Tab 1: Fixture scenarios ──
             with gr.TabItem("Fixture scenarios"):
                 gr.Markdown(
                     "Select a pre-built patient scenario to trace the pipeline: "
@@ -593,16 +686,16 @@ def build_ui() -> gr.Blocks:
                     strip_ga = gr.Checkbox(label="Remove gestational age", value=False)
                     strip_signs = gr.Checkbox(label="Mark all signs as not assessed", value=False)
 
+                evaluate_btn = gr.Button("Load Scenario", variant="primary")
+
                 with gr.Accordion("Clinical conversation (HealthBench source)", open=True):
-                    conv_out = gr.Markdown(value="_Select a scenario above, then click Evaluate._")
+                    conv_out = gr.Markdown(value="_Select a scenario above, then click Load Scenario._")
 
-                evaluate_btn = gr.Button("Evaluate", variant="primary")
-
-                with gr.Accordion("Step 1 — Danger signs in FHIR (WHO ANC codes)", open=True):
+                with gr.Accordion("Step 1 — Danger signs in FHIR (WHO ANCDT01 model)", open=True):
                     gr.Markdown(
-                        "Danger signs encoded as FHIR R4 Observations using the "
-                        "[WHO ANC custom code system](https://build.fhir.org/ig/WorldHealthOrganization/smart-anc/CodeSystem-anc-custom-codes.html) "
-                        "(ANC.B5.DE3–DE14) per ANCDT01."
+                        "Each ANC.B5 danger sign is one FHIR Observation with "
+                        f"`code = ANC.B5.DE48` (Danger signs) and `valueCodeableConcept` = the specific sign, "
+                        f"per the [WHO SMART ANC ANCDT01 library]({ANCDT01_URL})."
                     )
                     extraction_f_out = gr.Markdown()
                     fhir_note_f_out = gr.Markdown()
@@ -610,15 +703,13 @@ def build_ui() -> gr.Blocks:
                 with gr.Accordion("Step 2 — The clinical rule (CQL + Lean)", open=False):
                     with gr.Row():
                         with gr.Column():
-                            gr.Markdown("### CQL rule (`DangerSigns.cql`)")
+                            gr.Markdown("### CQL rule (ANCDT01.cql — WHO source)")
                             gr.Markdown(
-                                "Executed by **Google CQL** against the FHIR bundle. "
-                                "Implements ANCDT01 using WHO `anc-custom-codes` (ANC.B5.DE3–DE14). "
-                                "The authoritative WHO [ANCDT01.cql](https://build.fhir.org/ig/WorldHealthOrganization/smart-anc/Library-ANCDT01.html) "
-                                "uses the same codes via a multi-select Observation pattern; "
-                                "this prototype uses individual boolean Observations for standalone engine compatibility."
+                                f"Executed by **Google CQL** against the FHIR bundle. "
+                                f"Source: [{ANCDT01_URL}]({ANCDT01_URL}). "
+                                f"Run `scripts/setup-vendor.sh` to fetch the full library."
                             )
-                            gr.Code(value=CQL_SOURCE, language="sql", label="DangerSigns.cql")
+                            gr.Code(value=CQL_SOURCE, language="sql", label="ANCDT01.cql (excerpt)")
                         with gr.Column():
                             gr.Markdown("### Lean 4 model (`lean/`)")
                             gr.Markdown(
@@ -652,7 +743,6 @@ def build_ui() -> gr.Blocks:
                     outputs=[conv_out, extraction_f_out, fhir_note_f_out, results_f_out, proofs_f_out, fhir_f_out],
                 )
 
-            # ── Tab 2: Live LLM extraction ──
             with gr.TabItem("Live extraction (Claude API)"):
                 gr.Markdown(
                     "Paste any clinical conversation. Claude identifies ANCDT01 danger signs, "

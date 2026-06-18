@@ -5,7 +5,7 @@
   "extension": [
     {
       "url": "http://example.org/fhir/StructureDefinition/clinical-summary",
-      "valueString": "22 weeks GA, routine check-in, no danger signs — anatomy scan window (18-22 wks); true-negative baseline for ANCDT01 danger sign CQL"
+      "valueString": "22 weeks GA, routine check-in, no danger signs \u2014 anatomy scan window (18-22 wks); true-negative baseline for ANCDT01 danger sign CQL"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-prompt-id",
@@ -13,7 +13,7 @@
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-dataset",
-      "valueString": "hard_2025-05-08"
+      "valueString": "hard_2025-05-08-21-00-10"
     },
     {
       "url": "http://example.org/fhir/StructureDefinition/healthbench-conversation",
@@ -30,67 +30,78 @@
     },
     {
       "resource": {
-        "resourceType": "Observation",
-        "id": "ga-hb-routine-22wks",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://loinc.org", "code": "49051-6", "display": "Gestational age in weeks"}]
+        "resourceType": "Encounter",
+        "id": "enc-patient-hb-routine-22wks",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
         },
-        "subject": {"reference": "Patient/patient-hb-routine-22wks"},
-        "effectiveDateTime": "2024-07-01",
-        "valueQuantity": {"value": 22, "unit": "wk", "system": "http://unitsofmeasure.org", "code": "wk"}
+        "subject": {
+          "reference": "Patient/patient-hb-routine-22wks"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "bleeding-vaginally-neg",
+        "id": "ga-patient-hb-routine-22wks",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE3", "display": "Bleeding vaginally"}]
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "49051-6",
+              "display": "Gestational age in weeks"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-routine-22wks"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "subject": {
+          "reference": "Patient/patient-hb-routine-22wks"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-routine-22wks"
+        },
+        "effectiveDateTime": "2026-06-17",
+        "valueQuantity": {
+          "value": 22,
+          "unit": "wk",
+          "system": "http://unitsofmeasure.org",
+          "code": "wk"
+        }
       }
     },
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "severe-headache-neg",
+        "id": "ds-none-patient-hb-routine-22wks",
         "status": "final",
         "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE7", "display": "Severe headache"}]
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE48",
+              "display": "Danger signs"
+            }
+          ]
         },
-        "subject": {"reference": "Patient/patient-hb-routine-22wks"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "severe-pain-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE13", "display": "Severe pain"}]
+        "subject": {
+          "reference": "Patient/patient-hb-routine-22wks"
         },
-        "subject": {"reference": "Patient/patient-hb-routine-22wks"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "reduced-fetal-movement-neg",
-        "status": "final",
-        "code": {
-          "coding": [{"system": "http://fhir.org/guides/who/anc-cds/CodeSystem/anc-custom-codes", "code": "ANC.B5.DE48", "display": "Reduced or no fetal movements"}]
+        "encounter": {
+          "reference": "Encounter/enc-patient-hb-routine-22wks"
         },
-        "subject": {"reference": "Patient/patient-hb-routine-22wks"},
-        "effectiveDateTime": "2024-07-01",
-        "valueBoolean": false
+        "effectiveDateTime": "2026-06-17",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://smart.who.int/anc/CodeSystem/anc-custom-codes",
+              "code": "ANC.B5.DE49",
+              "display": "No danger signs"
+            }
+          ]
+        }
       }
     }
   ]

@@ -15,37 +15,33 @@ WHO ANC guidance / SMART ANC
         ↓
 FHIR data model + value sets
         ↓
-CQL rules for clinical decision support
-        ↓
-ELM (JSON/XML)
-        ↓
-Lean model of CQL semantics
-        ↓
-Proofs: safety, consistency, completeness, no contradictory recommendations
+CQL rules for clinical decision support (ANCDT01.cql)
+       ↙                    ↘
+Google CQL runtime     Lean model of CQL semantics
+(execution)            (hand-written, mirroring ANCDT01 logic)
+                              ↓
+                       Proofs: safety, consistency, no contradictory recommendations
 ```
 
 | Layer | Role | Primary artifacts |
 |-------|------|-------------------|
 | Clinical source | WHO recommendations, workflows, danger signs | [WHO ANC DAK](https://www.who.int/publications-detail-redirect/9789240020306), [SMART ANC IG](http://build.fhir.org/ig/WorldHealthOrganization/smart-anc/) |
 | Interoperability | Patient data, observations, conditions | FHIR R4 resources, SNOMED/LOINC value sets |
-| Decision logic | Computable CDS rules | CQL libraries (e.g. `ANCCommon`, danger-sign modules) |
-| Canonical IR | Platform-independent logic tree | [ELM](https://cql.hl7.org/04-logicalspecification.html) JSON/XML from [CQL-to-ELM translator](https://cql.hl7.org/06-translationsemantics.html) |
-| Verification | Executable semantics + proofs | Lean definitions, theorems, `#eval` / `#check` |
-| Compile | CQL → ELM (canonical IR) | [CQFramework cql-to-elm](https://github.com/cqframework/clinical_quality_language) or [translation service](https://github.com/cqframework/cql-translation-service) |
-| Runtime (demo) | Patient-facing CDS execution | [cql-execution](https://github.com/cqframework/cql-execution) + [cql-exec-fhir](https://github.com/cqframework/cql-exec-fhir) |
-| Runtime (optional) | Second opinion at scale | [Google CQL engine](https://github.com/google/cql) (Go; executes CQL directly on FHIR) |
+| Decision logic | Computable CDS rules | WHO SMART ANC CQL (`ANCDT01.cql`, `ANCCommon.cql`) sourced via `vendor/smart-anc` |
+| Execution | CQL on FHIR patients | [Google CQL engine](https://github.com/google/cql) (Go; runs CQL source directly on FHIR bundles) |
+| Verification | Executable semantics + proofs | Lean model of ANCDT01 logic (`PatientState`, `disposition`), theorems, `#eval` / `#check` |
 
 ### Why this pipeline
 
 1. **WHO SMART ANC** already formalizes ANC as FHIR Implementation Guide content with CQL libraries — see the [smart-anc repository](https://github.com/WorldHealthOrganization/smart-anc/) and [ANC Common Logic example](https://www.cqframework.org/cpg-example-anc/Library-ANCCommon.html).
-2. **CQL → ELM** is a normative, bi-directional mapping defined by HL7. ELM is an abstract syntax tree: ideal for importing into Lean without parsing CQL surface syntax.
-3. **Lean** gives a small trusted kernel, dependent types, and proof automation (`grind`, `simp`, etc.) to state and discharge properties that CQL engines do not check at authoring time.
+2. **Google CQL** runs the authoritative WHO CQL source directly on FHIR bundles with no translation step, giving a clean execution path and a second opinion on the Lean model.
+3. **Lean** gives a small trusted kernel, dependent types, and proof automation (`grind`, `simp`, etc.) to state and discharge safety properties that CQL engines do not check at authoring time.
 
 ---
 
 ## What Lean should verify
 
-These are the demonstration properties — stated as theorems over a Lean encoding of ELM evaluation on FHIR-shaped patient states.
+These are the demonstration properties — stated as theorems over a Lean model of ANCDT01 logic on FHIR-shaped patient states.
 
 ### 1. No missed critical cases
 
@@ -114,12 +110,11 @@ Keep the first demo **small, end-to-end, and provable** rather than covering the
 
 | Component | Scope |
 |-----------|--------|
-| CQL source | One library slice: **danger signs → referral disposition** plus **gestational age helpers** from WHO ANC common logic |
-| FHIR fixtures | 5–8 synthetic `Bundle` JSON patients (danger sign present/absent, missing GA, boundary GA weeks, conflicting signals) |
-| ELM import | Parse ELM JSON for a **subset** of operators: `And`, `Or`, `Not`, `Equal`, `Greater`, `Less`, `InValueSet`, `Retrieve`, `First`, `Exists` |
-| Lean model | `PatientState`, `EvalResult` (true / false / unknown), `Recommendation` enum, evaluator for imported ELM |
-| Proofs | 3–5 theorems: danger-sign completeness, no contradiction, one GA boundary lemma, one null-handling lemma |
-| Cross-check | Same fixtures run through `cql-execution` + `cql-exec-fhir`; diff against Lean `#eval` |
+| CQL source | **[`ANCDT01.cql`](https://github.com/WorldHealthOrganization/smart-anc/blob/master/input/cql/ANCDT01.cql)** from WHO SMART ANC — Quick Check danger signs → referral disposition (ANC.B5, 13 sign codes DE50–DE62, code system `http://smart.who.int/anc/CodeSystem/anc-custom-codes`) |
+| FHIR fixtures | 9 `Bundle` JSON patients from [OpenAI HealthBench](https://github.com/openai/healthbench) ANC scenarios, regenerated via `scripts/extract_danger_signs.py --fhir` |
+| Lean model | `PatientState` with `dangerSignStatus : Trilean`, `Recommendation` enum, disposition evaluator |
+| Proofs | 2 theorems proved: danger-sign completeness (`HasDangerSign p → disposition p = .urgentReferral`), no contradictory recommendations |
+| Cross-check | Same fixtures run through Google CQL (Go runtime) and Lean `#eval`; diff against expected disposition |
 
 ### Out of scope (later)
 
@@ -133,20 +128,21 @@ Keep the first demo **small, end-to-end, and provable** rather than covering the
 ```
 lean_cql_anc/
 ├── README.md
-├── cql/                    # CQL libraries (or git submodule → smart-anc)
-├── elm/                    # Translated ELM JSON
-├── fhir/fixtures/          # Synthetic patient bundles
+├── vendor/smart-anc/       # WHO SMART ANC CQL source (sparse-cloned by setup-vendor.sh; gitignored)
+│   └── input/cql/          # ANCDT01.cql, ANCContactDataElements.cql, ANCCommon.cql, …
+├── fixtures/patients/      # FHIR R4 Bundle patients from OpenAI HealthBench (hb-*.json)
 ├── lean/
-│   ├── LeanCqlAnc.lean     # Root module
-│   ├── Elm/                # ELM AST + importer
-│   ├── Semantics/          # Evaluator, null logic
-│   ├── Anc/                # ANC-specific predicates
-│   └── Proofs/             # Theorems
+│   └── LeanCqlAnc/
+│       ├── Basic.lean      # PatientState, Trilean, Recommendation
+│       ├── DangerSigns.lean # HasDangerSign, disposition evaluator
+│       ├── Proofs.lean     # Theorems
+│       └── Json.lean       # Parse FHIR Bundle → PatientState
 ├── scripts/
-│   ├── translate_cql.sh    # CQL → ELM via Java translator
-│   └── crosscheck.ts       # Lean eval vs cql-execution
-└── docs/
-    └── demo-walkthrough.md
+│   ├── setup-vendor.sh     # Sparse-clone WHO smart-anc repo into vendor/
+│   ├── extract_danger_signs.py  # Claude extraction: conversation → FHIR Bundle
+│   └── cql_runner.py       # Run Google CQL on fixtures, compare to Lean
+└── space/
+    └── app.py              # Gradio demo (Hugging Face Space)
 ```
 
 ---
@@ -157,10 +153,10 @@ The demo uses **different tools for different jobs**. They are complementary, no
 
 | Tool | Role | Use in this demo? | Why |
 |------|------|-------------------|-----|
-| **[CQFramework cql-to-elm](https://github.com/cqframework/clinical_quality_language)** | **Compiler**: CQL → ELM JSON/XML | **Yes — required** | Normative HL7 reference translator; ELM is the bridge into Lean |
-| **[cql-translation-service](https://github.com/cqframework/cql-translation-service)** | REST wrapper around cql-to-elm | **Yes — optional** | Nice for a Space UI: `POST /cql/translator` returns ELM on paste |
-| **[cql-execution](https://github.com/cqframework/cql-execution)** + **[cql-exec-fhir](https://github.com/cqframework/cql-exec-fhir)** | **Runtime**: ELM on FHIR patients | **Yes — primary live engine** | JavaScript, browser/Node-friendly, ELM-native — matches the Lean import path |
-| **[Google CQL](https://github.com/google/cql)** | **Runtime**: CQL on FHIR (Go) | **Yes — optional second engine** | Great demo story (“three paths agree”), but **not a compiler** and **no ELM import/export** |
+| **[Google CQL](https://github.com/google/cql)** | **Runtime**: CQL source on FHIR (Go) | **Yes — primary live engine** | Runs `ANCDT01.cql` directly on FHIR bundles; no Java/ELM step needed for execution |
+| **[CQFramework cql-to-elm](https://github.com/cqframework/clinical_quality_language)** | **Compiler**: CQL → ELM JSON/XML | Optional | Normative HL7 translator if you want to import ELM into Lean rather than re-implement the evaluator |
+| **[cql-translation-service](https://github.com/cqframework/cql-translation-service)** | REST wrapper around cql-to-elm | Optional | Useful for a live “paste CQL → see ELM” UX |
+| **[cql-execution](https://github.com/cqframework/cql-execution)** + **[cql-exec-fhir](https://github.com/cqframework/cql-exec-fhir)** | **Runtime**: ELM on FHIR patients (JavaScript) | Optional | Alternative cross-check engine; requires ELM translation step first |
 | **CQFramework Java engine** (`clinical_quality_language` engine module) | ELM runtime (JVM) | Optional | Heavier on Hugging Face; use if you already run Java for translation |
 
 ### Google CQL: worth including?
@@ -171,29 +167,27 @@ The demo uses **different tools for different jobs**. They are complementary, no
 
 Important constraints for *this* project:
 
-- **No ELM export** — Google CQL cannot feed the Lean pipeline. Lean still needs CQFramework’s CQL-to-ELM output.
-- **Experimental coverage** — no uncertainties, limited operators, Patient context only. Scope demo CQL to a small WHO ANC slice that runs on all three engines.
-- **Disagreements are a feature** — when Google CQL and cql-execution diverge, the demo can show *why* formal semantics matter (exactly the Lean value prop).
+- **No ELM export** — Google CQL runs CQL source directly; if you want the ELM-import Lean path, you still need CQFramework’s CQL-to-ELM output.
+- **Experimental coverage** — no uncertainties, limited operators, Patient context only. `ANCDT01` Quick Check fits within this scope.
+- **Disagreements are a feature** — when Google CQL and Lean diverge, the demo shows *why* formal semantics matter (exactly the Lean value prop).
 
 Recommended triangle for stakeholder demos:
 
 ```
-                    CQL source (WHO ANC slice)
-                           │
-           ┌───────────────┼───────────────┐
-           ▼               ▼               ▼
-    cql-to-elm         Google CQL      (author view)
-           │           (Go runtime)
-           ▼
-        ELM JSON
-           │
-     ┌─────┴─────┐
-     ▼           ▼
-cql-execution   Lean evaluator
-  (Node)         + proofs (offline)
+              WHO ANCDT01.cql source
+                     │
+         ┌───────────┴───────────┐
+         ▼                       ▼
+    Google CQL               Lean evaluator
+    (Go runtime)              + proofs (offline)
+    live in Space             proved in CI
+
+         └───────────┬───────────┘
+                     ▼
+              Results must agree
 ```
 
-All three runtimes should agree on fixture patients. Lean proves properties the engines do not check.
+Both execution paths evaluate the same FHIR fixtures; Lean proves safety properties the runtime cannot check.
 
 ---
 
@@ -205,21 +199,20 @@ A live demo should make the **two execution paths** visible side by side and sho
 
 ```mermaid
 flowchart LR
-  A[WHO ANC rule<br/>plain language] --> B[CQL snippet]
-  B --> C[ELM JSON]
-  C --> D[Lean evaluator]
-  C --> E[cql-execution]
-  D --> F[Theorem panel]
-  E --> G[Patient results table]
+  A[WHO ANC rule<br/>plain language] --> B[ANCDT01.cql<br/>from vendor/]
+  B --> C[Google CQL<br/>Go runtime]
+  B --> D[Lean evaluator<br/>+ proofs]
+  C --> G[Patient results table]
   D --> G
+  D --> F[Theorem panel]
   F --> H[Green: proven<br/>Red: counterexample]
 ```
 
-1. **Clinical anchor** — Show one WHO danger-sign recommendation in prose (from DAK Web Annex B), then the matching CQL `define`.
-2. **Translate** — Run CQL-to-ELM; open ELM JSON and highlight the `Exists` / `InValueSet` nodes.
-3. **Evaluate patients** — Pick a fixture patient; run JavaScript CDS and Lean `#eval`; results appear in a shared table (referral yes/no/unknown).
+1. **Clinical anchor** — Show the WHO ANC.B5 Quick Check danger-sign rule in prose (from DAK Web Annex B), then the matching CQL `define` in `ANCDT01.cql`.
+2. **Observe model** — Each danger sign is a single FHIR `Observation` with `code=ANC.B5.DE48` ("Danger signs") and `valueCodeableConcept` = the specific sign code (DE50–DE62), or DE49 ("No danger signs") when clear.
+3. **Evaluate patients** — Pick a fixture patient; run Google CQL and Lean `#eval`; results appear in a shared table (referral yes/no/unknown).
 4. **Prove** — In the Lean file, `#check` the theorem statement, then step through or `grind` the proof; show that a deliberately broken rule fails to compile or produces a counterexample `PatientState`.
-5. **Null case** — Toggle off a required observation in the fixture; show JS and Lean both return **unknown**, not false.
+5. **Null handling** — `hb-fetal-movement-reduced.json` and `hb-high-bp-30wks.json` have no ANCDT01 danger signs; both engines return **no danger signs** (DE49), demonstrating clean negative evaluation.
 
 ### UX surfaces
 
@@ -227,24 +220,27 @@ flowchart LR
 |---------|----------|---------------|
 | **VS Code / Cursor** | Engineers | Lean Infoview, `uv sync`, tasks for `lake build` + local Gradio |
 | **Static report** | Clinical informatics | HTML/Markdown table: rule × patient × CQL result × Lean result × proven? |
-| **CLI** | CI / reproducibility | `lake build` + `scripts/crosscheck.ts` → exit 1 on mismatch |
-| **Hugging Face Space** | Public stakeholder demo | Gradio UI: patient picker, live CQL/ELM engines, cached Lean proof status |
+| **CLI** | CI / reproducibility | `lake build` + `scripts/cql_runner.py` → exit 1 on mismatch |
+| **Hugging Face Space** | Public stakeholder demo | Gradio UI: patient picker, live Google CQL engine, cached Lean proof status |
 
 ### Minimal CLI experience
 
 ```bash
-# 1. Translate CQL → ELM
-./scripts/translate_cql.sh cql/DangerSigns.cql elm/DangerSigns.json
+# 1. Fetch WHO SMART ANC CQL source (sparse clone into vendor/)
+./scripts/setup-vendor.sh
 
 # 2. Build Lean proofs
-cd lean && lake build
+cd lean && lake build && cd ..
 
-# 3. Cross-check runtime vs formal model
-npm run crosscheck -- --fixture fhir/fixtures/danger-sign-bleeding.json
+# 3. Extract danger signs from a HealthBench fixture (requires ANTHROPIC_API_KEY)
+python scripts/extract_danger_signs.py fixtures/patients/hb-severe-headache.json --fhir
+
+# 4. Cross-check Google CQL runtime vs formal Lean model
+python scripts/cql_runner.py fixtures/patients/hb-vaginal-bleeding.json
 
 # Expected output:
-#   cql-execution:  REFERRAL
-#   Lean #eval:     REFERRAL
+#   Google CQL:  Should Proceed with ANC contact OR Referral → REFERRAL
+#   Lean #eval:  REFERRAL
 #   theorem danger_sign_implies_referral: ✓ proved
 ```
 
@@ -262,17 +258,16 @@ A Space is a strong fit for this demo: clinical informatics audiences get a **cl
 ┌─────────────────────────────────────────────────────────────┐
 │  Gradio app (Python)                                        │
 │  ┌─────────────┐  ┌──────────────┐  ┌───────────────────┐ │
-│  │ CQL editor  │  │ Patient      │  │ Results table     │ │
-│  │ (read-only  │  │ fixture      │  │ cql-exec │ Google │ │
-│  │  or slice)  │  │ dropdown     │  │ Lean     │ match? │ │
+│  │ ANCDT01.cql │  │ Patient      │  │ Results table     │ │
+│  │ (read-only, │  │ fixture      │  │ Google   │ Lean   │ │
+│  │ from vendor)│  │ dropdown     │  │ CQL      │ match? │ │
 │  └──────┬──────┘  └──────┬───────┘  └───────────────────┘ │
 │         │                │                                  │
 │         ▼                ▼                                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌───────────────────┐ │
-│  │ Node child   │  │ google/cql   │  │ proof_status.json │ │
-│  │ process:     │  │ CLI binary   │  │ (from CI / lake)  │ │
-│  │ cql-execution│  │ (optional)   │  │                   │ │
-│  └──────────────┘  └──────────────┘  └───────────────────┘ │
+│  ┌──────────────────────────────┐  ┌───────────────────┐  │
+│  │ google/cql CLI (Go binary)   │  │ proof_status.json │  │
+│  │ cql_runner.py subprocess     │  │ (from CI / lake)  │  │
+│  └──────────────────────────────┘  └───────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -280,17 +275,16 @@ A Space is a strong fit for this demo: clinical informatics audiences get a **cl
 
 | Step | Where | Rationale |
 |------|-------|-----------|
-| CQL → ELM | **Precomputed in repo** (or translation-service on paste) | Java/JVM cold start is slow on free-tier Spaces |
-| cql-execution on fixtures | **Live in Space** | Fast Node; good interactivity |
-| Google CQL on fixtures | **Live if binary fits** | Compelling “second engine”; pin a release tag |
+| WHO CQL source (`vendor/`) | **Bundled via `setup-vendor.sh`** | Sparse-clone at build time; CQL is read-only |
+| Google CQL on fixtures | **Live in Space** | Go binary; CQL source + FHIR bundle → disposition in one call |
 | Lean `lake build` + proofs | **CI only** → commit `artifacts/proof_status.json` + `artifacts/lean_eval.json` | elan + Mathlib-style deps are too heavy for interactive cold start |
-| ELM tree viewer | **Static** (syntax-highlighted JSON) | Educational; no server needed |
+| ANCDT01.cql viewer | **Static** (syntax-highlighted from `vendor/`) | Shows the real WHO rule, not a custom rewrite |
 
 ### Suggested `app.py` flow
 
-1. User selects an ANC scenario (e.g. “vaginal bleeding — danger sign”, “GA 20 weeks — boundary”, “missing GA — null”).
-2. App loads the FHIR `Bundle` fixture and the pinned CQL library slice.
-3. Backend runs **cql-execution** (subprocess `node scripts/eval.js`) and optionally **Google CQL** (`cql eval ...`).
+1. User selects an ANC scenario (e.g. “vaginal bleeding — danger sign”, “GA 20 weeks — boundary”, “missing signs — unknown”).
+2. App loads the FHIR `Bundle` fixture and WHO `ANCDT01.cql` from `vendor/smart-anc`.
+3. Backend runs **Google CQL** (`scripts/cql_runner.py`) to evaluate `Should Proceed with ANC contact OR Referral` and `Should Proceed with ANC contact`.
 4. UI merges in **precomputed Lean** results and theorem badges (green = proved in last CI run).
 5. Mismatch row highlights in red with a link to the theorem that should catch it.
 
@@ -306,11 +300,11 @@ See [docs/huggingface-setup.md](docs/huggingface-setup.md) and [docs/coding-envi
 
 ### UX touches that land well on HF
 
-- **WHO ANC quote** at top (plain-language danger sign) → expand to CQL → expand to ELM
-- **Three-column results**: CQFramework path (ELM → JS) | Google CQL | Lean (verified)
+- **WHO ANC quote** at top (plain-language danger sign) → expand to real `ANCDT01.cql` source from `vendor/`
+- **Two-column results**: Google CQL (live) | Lean (verified, precomputed)
 - **Theorem panel**: “Danger sign → referral: proved ✓” with commit SHA of last successful `lake build`
-- **Null toggle**: checkbox “remove GA observation” — watch all engines flip to unknown/null
-- **Scope badge**: “Prototype: 1 library, 6 patients, 8 ELM operators” — sets expectations
+- **Negative case**: `hb-fetal-movement-reduced.json` — no ANCDT01 danger signs → DE49 "No danger signs" → routine follow-up
+- **Scope badge**: “Prototype: ANCDT01 Quick Check, 15 patients, 2 theorems proved” — sets expectations
 
 ### What not to put in the Space
 
@@ -326,9 +320,9 @@ See [docs/huggingface-setup.md](docs/huggingface-setup.md) and [docs/coding-envi
 
 - [uv](https://docs.astral.sh/uv/) (Python env + Gradio Space)
 - [Lean 4](https://lean-lang.org/) (via `elan`)
-- Java 11+ (for [CQL-to-ELM](https://github.com/cqframework/clinical_quality_language))
-- Node.js 18+ (for CQL prototype eval and Hugging Face Space)
-- Go 1.21+ (optional, for [Google CQL](https://github.com/google/cql) second-engine cross-check)
+- Go 1.21+ (for [Google CQL](https://github.com/google/cql) — primary execution engine)
+- Node.js 18+ (optional, for Hugging Face Space JS tooling)
+- Java 11+ (optional, for [CQL-to-ELM translation](https://github.com/cqframework/clinical_quality_language) if pursuing the ELM-import Lean path)
 
 ### Install Python (uv)
 
@@ -345,13 +339,18 @@ curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf 
 elan default stable
 ```
 
-### Clone WHO ANC artifacts (reference)
+### Fetch WHO SMART ANC CQL source
 
 ```bash
-git clone https://github.com/WorldHealthOrganization/smart-anc.git vendor/smart-anc
+./scripts/setup-vendor.sh
 ```
 
-CQL libraries live under the IG source tree; translate with the CQFramework translator to produce ELM for import.
+This sparse-clones the WHO `smart-anc` repository into `vendor/smart-anc/input/cql/` (depth 1, no blobs beyond `input/cql`). The `vendor/` directory is gitignored. Run this once before building Lean or running fixtures.
+
+Key CQL files used:
+- `vendor/smart-anc/input/cql/ANCDT01.cql` — Quick Check danger signs → referral disposition
+- `vendor/smart-anc/input/cql/ANCContactDataElements.cql` — observation retrieval with `parameter encounter String`
+- `vendor/smart-anc/input/cql/ANCCommon.cql` — shared helpers
 
 ### Initialize this project (when Lean sources are added)
 
@@ -384,14 +383,15 @@ lake build
 
 ## Success criteria for the demo
 
-- [ ] One real WHO ANC CQL rule translated to ELM and imported into Lean
-- [ ] Evaluator agrees with `cql-execution` on all fixture patients
-- [ ] At least one **safety** theorem proved (danger sign → referral)
-- [ ] At least one **consistency** theorem proved (no contradictory dispositions)
+- [x] Real WHO `ANCDT01.cql` used directly (sourced via `vendor/smart-anc`, not rewritten)
+- [x] Fixtures use the WHO ANCDT01 observation model (`ANC.B5.DE48` / DE49–DE62, `http://smart.who.int/anc/CodeSystem/anc-custom-codes`)
+- [x] **Safety** theorem proved: `HasDangerSign p → disposition p = .urgentReferral`
+- [x] **Consistency** theorem proved: no patient simultaneously receives routine and urgent recommendations
+- [ ] Google CQL evaluator agrees with Lean on all 15 fixture patients (cross-check automated in CI)
 - [ ] Documented counterexample when a rule is intentionally weakened (proof fails)
 
 ---
 
 ## License and attribution
 
-Clinical content derives from WHO SMART ANC guidelines. CQL/ELM semantics follow HL7 normative specifications. Lean code in this repository should carry an explicit license (e.g. Apache-2.0) compatible with upstream artifacts.
+Clinical content derives from WHO SMART ANC guidelines. CQL semantics follow HL7 normative specifications. Lean code in this repository should carry an explicit license (e.g. Apache-2.0) compatible with upstream artifacts.
